@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36408.4
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Collab_Platform.DomainLayer", "Collab-Platform.DomainLayer\Collab_Platform.DomainLayer.csproj", "{F313A4FC-0D9C-49C0-B08D-8F5A86AF0F1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Collab_Platform.ApplicationLayer", "Collab-Platform.ApplicationLayer\Collab_Platform.ApplicationLayer.csproj", "{2F755AED-DDA8-45DB-9692-DCF993E6446B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F313A4FC-0D9C-49C0-B08D-8F5A86AF0F1C} = {F313A4FC-0D9C-49C0-B08D-8F5A86AF0F1C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Collab_Platform.InfastructureLayer", "Collab-Platform.InfastructureLayer\Collab_Platform.InfastructureLayer.csproj", "{4FB09818-BB4E-464D-B6AD-432D753A933D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2F755AED-DDA8-45DB-9692-DCF993E6446B} = {2F755AED-DDA8-45DB-9692-DCF993E6446B}
+		{F313A4FC-0D9C-49C0-B08D-8F5A86AF0F1C} = {F313A4FC-0D9C-49C0-B08D-8F5A86AF0F1C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Collab_Platform.PresentationLayer", "Collab-Platform.PresentationLayer\Collab_Platform.PresentationLayer.csproj", "{87FFBAFE-0397-47A7-BACA-E153B957EB2F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2F755AED-DDA8-45DB-9692-DCF993E6446B} = {2F755AED-DDA8-45DB-9692-DCF993E6446B}
+		{4FB09818-BB4E-464D-B6AD-432D753A933D} = {4FB09818-BB4E-464D-B6AD-432D753A933D}
+		{F313A4FC-0D9C-49C0-B08D-8F5A86AF0F1C} = {F313A4FC-0D9C-49C0-B08D-8F5A86AF0F1C}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F313A4FC-0D9C-49C0-B08D-8F5A86AF0F1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F313A4FC-0D9C-49C0-B08D-8F5A86AF0F1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F313A4FC-0D9C-49C0-B08D-8F5A86AF0F1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F313A4FC-0D9C-49C0-B08D-8F5A86AF0F1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F755AED-DDA8-45DB-9692-DCF993E6446B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F755AED-DDA8-45DB-9692-DCF993E6446B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F755AED-DDA8-45DB-9692-DCF993E6446B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F755AED-DDA8-45DB-9692-DCF993E6446B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FB09818-BB4E-464D-B6AD-432D753A933D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FB09818-BB4E-464D-B6AD-432D753A933D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FB09818-BB4E-464D-B6AD-432D753A933D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FB09818-BB4E-464D-B6AD-432D753A933D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87FFBAFE-0397-47A7-BACA-E153B957EB2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87FFBAFE-0397-47A7-BACA-E153B957EB2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87FFBAFE-0397-47A7-BACA-E153B957EB2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87FFBAFE-0397-47A7-BACA-E153B957EB2F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {33EE85C1-73D9-48C5-9C48-C88AFDD9B0CB}
+	EndGlobalSection
+EndGlobal
