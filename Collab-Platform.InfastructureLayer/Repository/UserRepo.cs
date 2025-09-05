@@ -46,7 +46,12 @@ namespace Collab_Platform.InfastructureLayer.Repository
         {
             return await _userManager.UpdateAsync(user);
         }
-
+        public async Task UpdateUserEmail(UserModel user) { 
+               await _userManager.UpdateNormalizedEmailAsync(user);
+        }
+        public async Task<IdentityResult> UpdateUserPassword(UserModel user, string currentPassword ,string newPassword) {
+            return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        }
         public async Task<bool> UserExist(string? email, string? username)
         {
             var query = _userManager.Users.AsQueryable();

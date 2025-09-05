@@ -1,11 +1,6 @@
 ﻿using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.ApplicationLayer.Service;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Collab_Platform.ApplicationLayer.DI
 {
@@ -14,6 +9,9 @@ namespace Collab_Platform.ApplicationLayer.DI
         public static IServiceCollection ServiceDependencyInjecttion(this IServiceCollection services) {
             services.AddScoped<IProjectInterface, ProjectService>();
             services.AddScoped<IUserInterface, UserService>();
+            services.AddScoped<ITokenService, JWTtokenService>();
+            services.AddScoped<IAuthInterface, AuthService>();
+            services.AddScoped<IAdminInterface, AdminService>();
             return services;
         }
 

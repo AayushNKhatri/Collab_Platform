@@ -12,7 +12,7 @@ namespace Collab_Platform.InfastructureLayer.Repository
         }
         public async Task<UserModel> GetUserEmail(string email)
         {
-            var user = await _userManager.FindByNameAsync(email);
+            var user = await _userManager.FindByEmailAsync(email);
             return user;
         }
     }

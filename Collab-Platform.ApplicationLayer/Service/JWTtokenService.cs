@@ -37,12 +37,12 @@ namespace Collab_Platform.ApplicationLayer.Service
                 else {
                     claim.Add(new(ClaimTypes.Role, "User"));
                 }
-                var tokenKey = _config["TokenSetting:Token"];
+                var tokenKey = _config["TokenSettings:Token"];
                 if (string.IsNullOrEmpty(tokenKey)) throw new InvalidOperationException("Token Key is Missing in Configuration");
-                var issuer = _config["TokenSetting:Issuer"];
-                var audience = _config["TokenSetting:Audience"];
+                var issuer = _config["TokenSettings:Issuer"];
+                var audience = _config["TokenSettings:Audience"];
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
-                if (string.IsNullOrEmpty(tokenKey) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(Audience))
+                if (string.IsNullOrEmpty(tokenKey) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience))
                 {
           
                     throw new InvalidOperationException("JWT environment variables not configured properly.");
@@ -62,7 +62,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             }
             catch(Exception e) 
             {
-                throw new Exception("Unable to create token");
+                throw new Exception("Unable to create token" + e.Message);
             }
         }
     }

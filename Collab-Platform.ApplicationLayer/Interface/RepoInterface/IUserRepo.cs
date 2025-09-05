@@ -9,6 +9,8 @@ namespace Collab_Platform.ApplicationLayer.Interface.RepoInterface
         Task<UserModel> GetUserByID(string userId);
         Task<List<UserModel>> GetAllUser();
         Task<IdentityResult> UpdateUser(UserModel user);
+        Task UpdateUserEmail(UserModel user);
+        Task<IdentityResult> UpdateUserPassword(UserModel user, string currentPassword, string newPassword);
         Task<IdentityResult> DeleteUser(UserModel user);
         Task<string?> GetUserRole(UserModel user);
         Task<bool> UserExist(string email, string username);

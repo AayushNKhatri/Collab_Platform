@@ -3,6 +3,7 @@ using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Collab_Platform.ApplicationLayer.Service
 {
@@ -17,20 +18,75 @@ namespace Collab_Platform.ApplicationLayer.Service
         {
             try 
             {
+                var UserExist = await _userRepo.UserExist(registerUser.Email, registerUser.UserName);
+                if (UserExist) throw new InvalidOperationException("This email or username is already in use");
                 var User = new UserModel { 
                     Email = registerUser.Email,
                     UserName = registerUser.UserName,
                     PhoneNumber = registerUser.PhoneNumber,
                 };
-                var UserExist = await _userRepo.UserExist(registerUser.Email, registerUser.UserName);
-                if (UserExist) throw new Exception("This email or username is already in use");
                 var result = await _userRepo.CreateUser(User, registerUser.Password);
-                if (!result.Succeeded) throw new Exception($"The Error Occured{result.Errors}");
+                if (!result.Succeeded) throw new ArgumentException($"The Error Occured{result.Errors.Select(e=>e.Description)}");
                 return result;
             }
             catch(Exception e) 
             {
                 throw new Exception("Error", e);
+            }
+        }
+        public async Task<UserProfileDto> UserProfile(string userId) {
+            try {
+                var user = await _userRepo.GetUserByID(userId) ?? throw new KeyNotFoundException("User Not found");
+                var UserProfile = new UserProfileDto
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    isEmailConfirmed = user.EmailConfirmed,
+
+                };
+                return UserProfile;
+                
+            }
+            catch (Exception ex) { 
+                throw new Exception("Error", ex);
+            }
+        }
+        public async Task DeleteUserById(string userID) {
+            try
+            {
+                var user = await _userRepo.GetUserByID(userID) ?? throw new KeyNotFoundException("User Not Found");
+                var result = await _userRepo.DeleteUser(user);
+            }
+            catch (Exception ex) 
+            {
+                throw new Exception("Error", ex);
+            }
+        }
+
+        public async Task<IdentityResult> UpdateUserProfile(UpdateUserDTO updateUser, string userID)
+        {
+            try {
+                var user = await _userRepo.GetUserByID(userID) ?? throw new KeyNotFoundException("No User find with given id");
+                if(!string.IsNullOrEmpty(updateUser.UserName))
+                    user.UserName = updateUser.UserName;
+                if (!string.IsNullOrEmpty(updateUser.Email))
+                    await _userRepo.UpdateUserEmail(user);
+                if (!string.IsNullOrEmpty(updateUser.newPassword)) 
+                {
+                    var cPassword = updateUser.currentPassword ?? throw new ArgumentException("Please provide current password if you want to update password");
+                    await _userRepo.UpdateUserPassword(user, cPassword, updateUser.currentPassword);
+                }
+                if(!string.IsNullOrEmpty(updateUser.PhoneNumber))
+                     user.UserName =updateUser.PhoneNumber;
+              
+                var result = await _userRepo.UpdateUser(user);
+                return result;
+                   
+                //Later i might have to refator this for adjusting Email Service and make different email update service
+            }
+            catch (Exception ex) {
+                throw new Exception("An error occured", ex);
             }
         }
     }

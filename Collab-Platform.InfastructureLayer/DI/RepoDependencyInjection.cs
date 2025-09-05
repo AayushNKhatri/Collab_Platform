@@ -12,6 +12,7 @@ namespace Collab_Platform.InfastructureLayer.DI
             services.AddScoped<IProjectRepo, ProjectRepo>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepo, UserRepo>();
+            services.AddScoped<IEmailRepo, EmailRepo>();
             services.AddScoped<ISeedService, SeedDB>();
             return services;
         } 

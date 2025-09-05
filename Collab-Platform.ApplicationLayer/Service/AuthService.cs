@@ -19,17 +19,10 @@ namespace Collab_Platform.ApplicationLayer.Service
         }
         public async Task<string> Login(LoginDto loginDto)
         {
-            try {
-                //find the user
-                var user = await _emailRepo.GetUserEmail(loginDto.email) ?? throw new UnauthorizedAccessException("Invalid Email or password");
-                var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.password, false) ?? throw new UnauthorizedAccessException("Invalid Email or password");
-                var token = await _tokenService.GenerateJwtToken(user);
-                return token;
-            }
-            catch(Exception e) {
-                throw new Exception($"Error:-{e}");
-            }
-            
+            var user = await _emailRepo.GetUserEmail(loginDto.email) ?? throw new UnauthorizedAccessException("Invalid Email or password");
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.password, false) ?? throw new UnauthorizedAccessException("Invalid Email or password");
+            var token = await _tokenService.GenerateJwtToken(user);
+            return token;
         }
     }
 }
