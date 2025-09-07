@@ -11,6 +11,6 @@ namespace Collab_Platform.ApplicationLayer.Interface.ServiceInterface
 {
     public interface IProjectInterface
     {
-        Task<CustomResult<ProjectModel, string>> CreateProject(CreateProjectDto createProjectDto); 
+        Task<ProjectModel> CreateProject(CreateProjectDto createProjectDto); 
     }
 }

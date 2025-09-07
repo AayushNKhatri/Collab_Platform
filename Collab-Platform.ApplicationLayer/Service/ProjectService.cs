@@ -2,39 +2,38 @@
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Collab_Platform.ApplicationLayer.Service
 {
     public class ProjectService : IProjectInterface
     {
         private readonly IProjectRepo _projectRepo;
-        private readonly IUnitOfWork _unitOfWok;
-        public ProjectService(IProjectRepo projectRepo, IUnitOfWork unitOfWok) { 
+        private readonly IHelperService _helperService;
+        public ProjectService(IProjectRepo projectRepo, IHelperService helperService) { 
             _projectRepo = projectRepo;
-            _unitOfWok = unitOfWok;
+            _helperService = helperService;
         }
 
-        public async Task<CustomResult<ProjectModel, string>> CreateProject(CreateProjectDto createProjectDto)
+        public async Task<ProjectModel> CreateProject(CreateProjectDto createProjectDto)
         {
-            await _unitOfWok.BeginTranctionAsync();
             try {
+                var userID = _helperService.GetTokenDetails().Item1 ?? throw new KeyNotFoundException("UserID not found");
                 var project = new ProjectModel {
                     ProjectId = Guid.NewGuid(),
                     ProjectName = createProjectDto.ProjectName,
                     PorjectVisibility = createProjectDto.PorjectVisibility,
                     ProejctDesc = createProjectDto.ProejctDesc,
-                    CreatorId = "SomeString",
+                    CreatorId = userID,
                     StartedAt = DateTime.Now,
                     EstComplete = createProjectDto.EstComplete,
                     ActualComplete = null,
                 };
-                await _projectRepo.CreateProject(project);
-                await _unitOfWok.CommitTranctionAsync();
-                return CustomResult<ProjectModel, string>.Ok(project, "Project has been created");
+                var result = await _projectRepo.CreateProject(project);
+                return result;
             }
             catch (Exception e) {
-                await _unitOfWok.RollBackTranctionAsync();
-                return CustomResult<ProjectModel, string>.Fail(new List<string> {e.Message}, "Failed to create project");
+                throw new Exception("Error", e);
             }
         }
     }

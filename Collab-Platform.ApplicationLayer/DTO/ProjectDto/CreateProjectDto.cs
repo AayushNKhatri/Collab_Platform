@@ -1,4 +1,5 @@
 ﻿using Collab_Platform.DomainLayer.EnumsAndOther;
+using Collab_Platform.DomainLayer.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Collab_Platform.ApplicationLayer.DTO.ProjectDto
@@ -11,6 +12,8 @@ namespace Collab_Platform.ApplicationLayer.DTO.ProjectDto
         public string ProejctDesc { get; set; }
         [Required]
         public PorjectVisibilityEnum PorjectVisibility { get; set; }
+
+        public List<string> ProjectMemberID { get; set; }
         public DateTime? EstComplete { get; set; }
     }
 }

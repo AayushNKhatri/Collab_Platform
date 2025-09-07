@@ -12,6 +12,7 @@ namespace Collab_Platform.ApplicationLayer.DI
             services.AddScoped<ITokenService, JWTtokenService>();
             services.AddScoped<IAuthInterface, AuthService>();
             services.AddScoped<IAdminInterface, AdminService>();
+            services.AddScoped<IHelperService, Helper>();
             return services;
         }
 

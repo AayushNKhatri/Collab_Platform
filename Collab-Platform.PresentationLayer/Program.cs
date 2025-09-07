@@ -9,7 +9,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Serilog;
+using Collab_Platform.PresentationLayer.Middleware;
 
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.File("logs/log.text", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -47,11 +54,16 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
+builder.Host.UseSerilog();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.RepoDI();
 builder.Services.ServiceDependencyInjecttion();
 builder.Services.AddOpenApi();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -85,7 +97,7 @@ builder.Services.AddAuthentication(options =>
 
 
 var app = builder.Build();
-
+app.UseMiddleware<GlobalException>();
 using (var scope = app.Services.CreateScope()) { 
     var service =scope.ServiceProvider;
     var seedService = service.GetRequiredService<ISeedService>();
@@ -104,6 +116,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers();   
 
 app.Run();

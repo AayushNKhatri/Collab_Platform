@@ -3,7 +3,6 @@ using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Collab_Platform.ApplicationLayer.Service
 {
@@ -19,7 +18,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             try 
             {
                 var UserExist = await _userRepo.UserExist(registerUser.Email, registerUser.UserName);
-                if (UserExist) throw new InvalidOperationException("This email or username is already in use");
+                if (UserExist) throw new InvalidOperationException($"User already exist with this username and email");
                 var User = new UserModel { 
                     Email = registerUser.Email,
                     UserName = registerUser.UserName,
@@ -31,7 +30,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             }
             catch(Exception e) 
             {
-                throw new Exception("Error", e);
+                throw;
             }
         }
         public async Task<UserProfileDto> UserProfile(string userId) {
@@ -49,7 +48,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 
             }
             catch (Exception ex) { 
-                throw new Exception("Error", ex);
+                throw;
             }
         }
         public async Task DeleteUserById(string userID) {
@@ -60,7 +59,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             }
             catch (Exception ex) 
             {
-                throw new Exception("Error", ex);
+                throw;
             }
         }
 
@@ -86,7 +85,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 //Later i might have to refator this for adjusting Email Service and make different email update service
             }
             catch (Exception ex) {
-                throw new Exception("An error occured", ex);
+                throw;
             }
         }
     }

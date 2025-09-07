@@ -1,5 +1,7 @@
 ﻿using Collab_Platform.ApplicationLayer.DTO.ProjectDto;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
+using Collab_Platform.DomainLayer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Collab_Platform.PresentationLayer.Controllers
@@ -14,16 +16,14 @@ namespace Collab_Platform.PresentationLayer.Controllers
         }
 
         [HttpPost("Create-Project")]
-        public async Task<IActionResult> CreateProjectAsync([FromBody] CreateProjectDto createProject) {
-            try { 
+        [Authorize]
+        public async Task<ActionResult<APIResponse>> CreateProjectAsync([FromBody] CreateProjectDto createProject) {
                 var result = await _projectService.CreateProject(createProject);
-                if(!result.Success)
-                    return BadRequest(result.Errors);
-                return Ok(result);
-            }
-            catch(Exception e) {
-                return StatusCode(500, new { messege = e.Message, Error = "Internal server error" });
-            }
+                return Ok(new APIResponse { 
+                    Success = true,
+                    Messege = "Project sucessfully created"
+                });
+            
         } 
     }
 }
