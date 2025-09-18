@@ -9,8 +9,10 @@ namespace Collab_Platform.ApplicationLayer.Service
     public class UserService : IUserInterface
     {
         public readonly IUserRepo _userRepo;
-        public UserService(IUserRepo userRepo) { 
+        public readonly IUnitOfWork _unitOfWork;
+        public UserService(IUserRepo userRepo, IUnitOfWork unitOfWork) { 
             _userRepo = userRepo;  
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IdentityResult> CreateUser(RegisterDto registerUser)
@@ -24,8 +26,22 @@ namespace Collab_Platform.ApplicationLayer.Service
                     UserName = registerUser.UserName,
                     PhoneNumber = registerUser.PhoneNumber,
                 };
+                await _unitOfWork.BeginTranctionAsync();
                 var result = await _userRepo.CreateUser(User, registerUser.Password);
+                var user = await _userRepo.GetUserByID(User.Id);
+                if (user == null) { 
+                    await _unitOfWork.RollBackTranctionAsync();
+                    throw new InvalidOperationException("User cannot be register contatct admin");
+                }
                 if (!result.Succeeded) throw new ArgumentException($"The Error Occured{result.Errors.Select(e=>e.Description)}");
+                var role = "User";
+                var roleResult = await _userRepo.AddUserRole(user, role);
+                if (roleResult == null) 
+                {
+                    await _unitOfWork.RollBackTranctionAsync();
+                    throw new InvalidOperationException("Connot assing the role Registration failed");
+                }
+                await _unitOfWork.CommitTranctionAsync();
                 return result;
             }
             catch(Exception e) 

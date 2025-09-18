@@ -7,6 +7,9 @@ namespace Collab_Platform.ApplicationLayer.Service
     public class AdminService : IAdminInterface
     {
         public readonly IUserRepo _userRepo;
+        public AdminService(IUserRepo userRepo) {
+            _userRepo = userRepo;
+        }
         public async Task<List<UserModel>> GetAllUserData() {
             try {
                 var Users = await _userRepo.GetAllUser();

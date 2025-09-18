@@ -14,7 +14,7 @@ namespace Collab_Platform.ApplicationLayer.Service
         public (string, string) GetTokenDetails()
         {
             try {
-                var userID = _httpContext.HttpContext.User.Identity.Name;
+                var userID = _httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var role = _httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Role);
                 return (userID, role);
             }

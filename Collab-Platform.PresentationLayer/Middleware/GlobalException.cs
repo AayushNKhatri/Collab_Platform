@@ -17,7 +17,7 @@ namespace Collab_Platform.PresentationLayer.Middleware
                 await _next(context);
             }
             catch (Exception e) {
-                Log.Error(e, "Error Occurred");
+                Log.Error(e, $"Error Occurred: {e.Message}");
                 await HandleExceptionAsync(context, e);
             }
         }

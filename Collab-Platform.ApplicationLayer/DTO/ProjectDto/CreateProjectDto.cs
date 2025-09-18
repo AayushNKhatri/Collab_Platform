@@ -9,10 +9,9 @@ namespace Collab_Platform.ApplicationLayer.DTO.ProjectDto
         [Required]
         public string ProjectName { get; set; }
         [Required]
-        public string ProejctDesc { get; set; }
+        public string ProjectDesc { get; set; }
         [Required]
         public PorjectVisibilityEnum PorjectVisibility { get; set; }
-
         public List<string> ProjectMemberID { get; set; }
         public DateTime? EstComplete { get; set; }
     }

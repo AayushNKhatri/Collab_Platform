@@ -1,20 +1,16 @@
 ﻿using Collab_Platform.DomainLayer.EnumsAndOther;
+using Collab_Platform.DomainLayer.Models;
 using System.ComponentModel.DataAnnotations;
 
-
-namespace Collab_Platform.DomainLayer.Models
+namespace Collab_Platform.ApplicationLayer.DTO.ProjectDto
 {
-    public class ProjectModel
+    public class ProjectDetailDto
     {
-        public Guid ProjectId { get; set; } 
-        [Required]
+        public Guid ProjectId { get; set; }
         public string ProjectName { get; set; }
-        [Required]
         public string ProjectDesc { get; set; }
-        [Required]
         public string CreatorId { get; set; }
         public UserModel Creator { get; set; }
-        [Required]
         public PorjectVisibilityEnum PorjectVisibility { get; set; } = PorjectVisibilityEnum.Private;
         public string? InviteCode { get; set; }
         public DateTime StartedAt { get; set; } = DateTime.UtcNow;
@@ -26,8 +22,5 @@ namespace Collab_Platform.DomainLayer.Models
         public ICollection<TaskModel> Tasks { get; set; }
         public ICollection<Channel> Channel { get; set; }
         public ICollection<CustomRoleModels> CustomRoles { get; set; }
-
-
-
     }
 }

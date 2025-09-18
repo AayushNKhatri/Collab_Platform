@@ -20,22 +20,21 @@ namespace Collab_Platform.ApplicationLayer.Service
         public async Task<string> GenerateJwtToken(UserModel user)
         {
             try {
-                var claim = new List<Claim>
-                {
-                    new(ClaimTypes.NameIdentifier, user.Id),
-                    new(ClaimTypes.Email, user.Email),
-                    new(ClaimTypes.Name, user.UserName)
-                };
                 var roles = await _userRepo.GetUserRole(user);
-                if (roles.Any())
+                var claims = new List<Claim>
                 {
-                    foreach (var role in roles)
-                    {
-                        claim.Add(new(ClaimTypes.Role, roles));
-                    }
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Name, user.UserName)
+                };
+                if (!string.IsNullOrEmpty(roles))
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, roles));
                 }
-                else {
-                    claim.Add(new(ClaimTypes.Role, "User"));
+
+                else
+                {
+                    claims.Add(new(ClaimTypes.Role, "User"));
                 }
                 var tokenKey = _config["TokenSettings:Token"];
                 if (string.IsNullOrEmpty(tokenKey)) throw new InvalidOperationException("Token Key is Missing in Configuration");
@@ -53,7 +52,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                         audience:audience,
                         expires:DateTime.UtcNow.AddDays(1),
                         signingCredentials:credentials,
-                        claims:claim
+                        claims:claims
                     );
 
                 return new JwtSecurityTokenHandler().WriteToken(descriptor);

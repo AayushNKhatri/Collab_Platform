@@ -41,7 +41,9 @@ namespace Collab_Platform.InfastructureLayer.Repository
             var roles = await _userManager.GetRolesAsync(user);
             return roles.FirstOrDefault();
         }
-
+        public async Task<IdentityResult> AddUserRole(UserModel user, string role) {
+            return await _userManager.AddToRoleAsync(user, role);
+        }
         public async Task<IdentityResult> UpdateUser(UserModel user)
         {
             return await _userManager.UpdateAsync(user);
@@ -65,6 +67,10 @@ namespace Collab_Platform.InfastructureLayer.Repository
                 return await query.AnyAsync(u => u.UserName == username);
             }
             return false;
+        }
+        public async Task<List<UserModel>> GetMultipeUserById(List<string> userId) {
+            var users = await _userManager.Users.Where(u => userId.Contains(u.Id)).ToListAsync();
+            return users;
         }
     }
 }

@@ -35,5 +35,13 @@ namespace Collab_Platform.InfastructureLayer.Repository
             var project = await _db.Projects.FirstOrDefaultAsync(p=>p.ProjectId == ProjectID);
             return project;
         }
+        public async Task addUserToProject(List<UserProject> userProject)
+        {
+            await _db.UserProject.AddRangeAsync(userProject);
+        }
+        public async Task<List<ProjectModel>> GetAllProject()
+        {
+            return await _db.Projects.ToListAsync();
+        }
     }
 }
