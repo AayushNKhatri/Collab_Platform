@@ -10,9 +10,11 @@ namespace Collab_Platform.ApplicationLayer.Service
     {
         public readonly IUserRepo _userRepo;
         public readonly IUnitOfWork _unitOfWork;
-        public UserService(IUserRepo userRepo, IUnitOfWork unitOfWork) { 
+        public readonly IProjectRepo _projectRepo;
+        public UserService(IUserRepo userRepo, IUnitOfWork unitOfWork, IProjectRepo projectRepo) { 
             _userRepo = userRepo;  
             _unitOfWork = unitOfWork;
+            _projectRepo = projectRepo;
         }
 
         public async Task<IdentityResult> CreateUser(RegisterDto registerUser)
@@ -52,12 +54,18 @@ namespace Collab_Platform.ApplicationLayer.Service
         public async Task<UserProfileDto> UserProfile(string userId) {
             try {
                 var user = await _userRepo.GetUserByID(userId) ?? throw new KeyNotFoundException("User Not found");
+                var project = await _projectRepo.GetAllProjectByUserID(userId);
                 var UserProfile = new UserProfileDto
                 {
                     UserName = user.UserName,
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
                     isEmailConfirmed = user.EmailConfirmed,
+                    ProjectOfUser = project.Select(u => new ProjectOfUser
+                    {
+                        ProjectId = u.ProjectId,
+                        ProjectName = u.ProjectName
+                    }).ToList()
 
                 };
                 return UserProfile;

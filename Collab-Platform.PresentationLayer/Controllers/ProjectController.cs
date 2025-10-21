@@ -19,14 +19,13 @@ namespace Collab_Platform.PresentationLayer.Controllers
         [Authorize]
         public async Task<ActionResult<APIResponse>> CreateProjectAsync([FromBody] CreateProjectDto createProject) {
                 var result = await _projectService.CreateProject(createProject);
-                return Ok(new APIResponse<ProjectModel> { 
+                return Ok(new APIResponse { 
                     Success = true,
-                    Data = result,
                     Messege = "Project sucessfully created"
                 });
             
         }
-        [HttpGet("Project")]
+        [HttpGet]
         [Authorize]
         public async Task<ActionResult<APIResponse>> GetProjectByUserID() {
             var result = await _projectService.GetProjectByUserId();
@@ -36,7 +35,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 Messege = "User project retrived"
             });
         }
-        [HttpGet("Project/{ProjectId}")]
+        [HttpGet("{ProjectId}")]
         [Authorize]
         public async Task<ActionResult<APIResponse>> GetProjectByProjectId([FromRoute] Guid ProjectId) {
             var result = await _projectService.GetProjectById(ProjectId);
@@ -46,7 +45,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 Messege = "Project Retrived Sucessfully"
             });
         }
-        [HttpPut("AddUser's")]
+        [HttpPut("AddUser")]
         [Authorize]
         public async Task<ActionResult<APIResponse>> AddUserToProject([FromBody] AddUserProjectDto addUserProject) {
             await _projectService.AddUserToProject(addUserProject) ;
@@ -54,6 +53,18 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 Success = true,
                 Messege = "Sucessfully added user's to the project"
             });
+        }
+        [HttpPut("{ProjectID}")]
+        public async Task<ActionResult<APIResponse<ProjectDetailDto>>> UpdateProject([FromBody] UpdateProjectDto updateProject, [FromRoute]Guid ProjectID)
+        { 
+            var result = await _projectService.UpdateProject(ProjectID, updateProject) ;
+            return Ok(new APIResponse<ProjectDetailDto> { Success = true, Messege = "Sucessfully updated project", Data=result });  
+        }
+        [HttpDelete("{ProjectID}")]
+        public async Task<ActionResult<APIResponse>> DeleteProejct([FromRoute] Guid ProjectID)
+        {
+            await _projectService.DeleteProject(ProjectID) ;
+            return Ok(new APIResponse { Success = true, Messege = "Project Sucessfully deleted" });
         }
     }
 }

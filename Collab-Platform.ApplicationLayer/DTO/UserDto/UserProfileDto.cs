@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Collab_Platform.ApplicationLayer.DTO.UserDto
+﻿namespace Collab_Platform.ApplicationLayer.DTO.UserDto
 {
     public class UserProfileDto
     {
@@ -13,5 +6,10 @@ namespace Collab_Platform.ApplicationLayer.DTO.UserDto
         public bool isEmailConfirmed { get; set; }
         public string UserName { get; set; }
         public string PhoneNumber { get; set; }
+        public List<ProjectOfUser> ProjectOfUser { get; set; }
+    }
+    public class ProjectOfUser { 
+        public string ProjectName { get; set; }
+        public Guid ProjectId { get; set; }
     }
 }

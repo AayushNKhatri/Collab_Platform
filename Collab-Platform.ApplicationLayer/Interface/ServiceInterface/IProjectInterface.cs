@@ -10,6 +10,7 @@ namespace Collab_Platform.ApplicationLayer.Interface.ServiceInterface
         Task<ProjectDetailDto> GetProjectById(Guid projectId);
         Task<List<ProjectDetailDto>> GetProjectByUserId();
         Task AddUserToProject(AddUserProjectDto addUserProject);
-        Task<List<ProjectDetailDto>> UpdateProject(Guid projectID, UpdateProjectDto updateProject);
+        Task<ProjectDetailDto> UpdateProject(Guid projectID, UpdateProjectDto updateProject);
+        Task DeleteProject(Guid ProjectId);
     }
 }

@@ -27,21 +27,24 @@ namespace Collab_Platform.InfastructureLayer.Repository
         }
         public async Task<List<ProjectModel>> GetAllProjectByUserID(string userID)
         {
-            var project = await _db.Projects.Where(u => u.CreatorId == userID).ToListAsync();
+            var project = await _db.Projects.Include(u => u.Creator).Include(u => u.UserProjects).ThenInclude(u => u.User).Where(u => u.CreatorId == userID).ToListAsync();
             return project;
         }
         public async Task<ProjectModel> GetProjectByID(Guid ProjectID)
         {
-            var project = await _db.Projects.FirstOrDefaultAsync(p=>p.ProjectId == ProjectID);
+            var project = await _db.Projects.Include(u => u.UserProjects).ThenInclude(u => u.User).FirstOrDefaultAsync(p=>p.ProjectId == ProjectID);
             return project;
         }
         public async Task addUserToProject(List<UserProject> userProject)
         {
             await _db.UserProject.AddRangeAsync(userProject);
         }
+        public async Task deleteUserProject(List<UserProject> userProjects) {
+             _db.UserProject.RemoveRange(userProjects);
+        }
         public async Task<List<ProjectModel>> GetAllProject()
         {
-            return await _db.Projects.ToListAsync();
+            return await _db.Projects.Include(u => u.UserProjects).ThenInclude(u=>u.User).ToListAsync();
         }
     }
 }

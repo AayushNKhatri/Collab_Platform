@@ -1,10 +1,4 @@
 ﻿using Collab_Platform.DomainLayer.EnumsAndOther;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Collab_Platform.ApplicationLayer.DTO.ProjectDto
 {

@@ -86,23 +86,23 @@ namespace Collab_Platform.ApplicationLayer.Service
         public async Task<List<ProjectDetailDto>> GetAllProject()
         {
             var result = await _projectRepo.GetAllProject();
+            var userDetail = new List<UserProjectDetailsDto>();
+            foreach (ProjectModel proj in result) {
+                 userDetail = await GetUserProjectDetails(proj);
+            }
             var project = result.Select(p => new ProjectDetailDto { 
                 ProjectId = p.ProjectId,
                 ProjectName = p.ProjectName,
                 ProjectDesc = p.ProjectDesc,
-                CreatorId = p.CreatorId,
-                Creator = p.Creator,
+                CreatorName = p.Creator.UserName,
                 PorjectVisibility = p.PorjectVisibility,
                 InviteCode = p.InviteCode,
-                StartedAt = p.StartedAt,
+                StartedAt = p.StartedAt,    
                 EstComplete = p.EstComplete,
                 ActualComplete = p.ActualComplete,
                 CreatedAt = p.CreatedAt,
                 UpdatedAt = p.UpdatedAt,
-                UserProjects = p.UserProjects,
-                Tasks = p.Tasks,
-                Channel = p.Channel,
-                CustomRoles = p.CustomRoles,
+                UserDetails = userDetail
             }).ToList();
             return project;
         }
@@ -110,13 +110,13 @@ namespace Collab_Platform.ApplicationLayer.Service
         public async Task<ProjectDetailDto> GetProjectById(Guid projectId)
         {
             var result = await _projectRepo.GetProjectByID(projectId) ?? throw new KeyNotFoundException("No Project found with that id");
+            var userDetails = await GetUserProjectDetails(result);
             var project = new ProjectDetailDto
             {
                 ProjectId = result.ProjectId,
                 ProjectName = result.ProjectName,
                 ProjectDesc = result.ProjectDesc,
-                CreatorId = result.CreatorId,
-                Creator = result.Creator,
+                CreatorName = result.Creator.UserName,
                 PorjectVisibility = result.PorjectVisibility,
                 InviteCode = result.InviteCode,
                 StartedAt = result.StartedAt,
@@ -124,24 +124,26 @@ namespace Collab_Platform.ApplicationLayer.Service
                 ActualComplete = result.ActualComplete,
                 CreatedAt = result.CreatedAt,
                 UpdatedAt = result.UpdatedAt,
-                UserProjects = result.UserProjects,
-                Tasks = result.Tasks,
-                Channel = result.Channel,
-                CustomRoles = result.CustomRoles,
+                UserDetails = userDetails
             };
             return project;
         }
 
         public async Task<List<ProjectDetailDto>> GetProjectByUserId()
         {
+            var userDetails = new List<UserProjectDetailsDto>();
             var userId = _helperService.GetTokenDetails().Item1 ?? throw new KeyNotFoundException("UserID not found");
             var result = await _projectRepo.GetAllProjectByUserID(userId) ?? throw new KeyNotFoundException("No project found for given user");
+            foreach (var item in result)
+            {
+                userDetails = await GetUserProjectDetails(item);
+                
+            }
             var project = result.Select( p => new ProjectDetailDto{
                 ProjectId = p.ProjectId,
                 ProjectName = p.ProjectName,
                 ProjectDesc = p.ProjectDesc,
-                CreatorId = p.CreatorId,
-                Creator = p.Creator,
+                CreatorName = p.Creator.UserName,
                 PorjectVisibility = p.PorjectVisibility,
                 InviteCode = p.InviteCode,
                 StartedAt = p.StartedAt,
@@ -149,12 +151,101 @@ namespace Collab_Platform.ApplicationLayer.Service
                 ActualComplete = p.ActualComplete,
                 CreatedAt = p.CreatedAt,
                 UpdatedAt = p.UpdatedAt,
-                UserProjects = p.UserProjects,
-                Tasks = p.Tasks,
-                Channel = p.Channel,
-                CustomRoles = p.CustomRoles,
+                UserDetails = userDetails
             }).ToList();
             return project;
+        }
+
+        public async Task<ProjectDetailDto> UpdateProject(Guid projectID, UpdateProjectDto updateProject)
+        {
+            if (updateProject == null)
+                throw new ArgumentNullException("Update Project is required to update the project.");
+
+            await _unitOfWork.BeginTranctionAsync();
+            try
+            {
+                var projectModel = await _projectRepo.GetProjectByID(projectID) ?? throw new KeyNotFoundException("Project Not found");
+                if (updateProject.ProjectMemberID != null) {
+                    var existingUser = projectModel.UserProjects.Select(u => u.UserId).ToHashSet();
+                    var incomingUser = new HashSet<string>(updateProject.ProjectMemberID);
+                    var membersToRemove = new HashSet<string>(existingUser);
+                    //filtering users that needs to be removed
+                    membersToRemove.ExceptWith(incomingUser);
+                    //filtering users that needs to be add
+                    incomingUser.ExceptWith(existingUser);
+
+
+                if (incomingUser.Any())
+                    {
+                        //First get uerproject detail through id then remove The User Form Project same goes for add
+                        var userPorjectToAdd = await MapUserProject(updateProject, projectID);
+                        await _projectRepo.addUserToProject(userPorjectToAdd);
+                    }
+                    if (membersToRemove.Any())
+                    {
+                        var userProjectToRemove = await MapUserProject(updateProject, projectID);
+                        await _projectRepo.deleteUserProject(userProjectToRemove);
+                    }
+                }
+
+
+                
+                    projectModel.ProjectName = updateProject.ProjectName ?? projectModel.ProjectName;
+                    projectModel.ProjectDesc = updateProject.ProjectDesc ?? projectModel.ProjectDesc;
+                    projectModel.EstComplete = updateProject.EstComplete ?? projectModel.EstComplete;
+                    projectModel.PorjectVisibility = updateProject.PorjectVisibility ?? projectModel.PorjectVisibility;     
+                    projectModel.UpdatedAt = DateTime.UtcNow;
+                
+
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTranctionAsync();
+
+                var userDetails = await GetUserProjectDetails(projectModel);
+                var projectDetail = new ProjectDetailDto
+                {
+                    ProjectId = projectModel.ProjectId,
+                    ProjectName = projectModel.ProjectName,
+                    ProjectDesc = projectModel.ProjectDesc,
+                    CreatorName = projectModel.Creator.UserName,
+                    PorjectVisibility = projectModel.PorjectVisibility,
+                    InviteCode = projectModel.InviteCode,
+                    StartedAt = projectModel.StartedAt,
+                    EstComplete = projectModel.EstComplete,
+                    ActualComplete = projectModel.ActualComplete,
+                    CreatedAt = projectModel.CreatedAt,
+                    UpdatedAt = projectModel.UpdatedAt,
+                    UserDetails = userDetails,
+                };
+                return projectDetail;
+            }
+            catch{
+                await _unitOfWork.RollBackTranctionAsync();
+                throw;
+            }
+
+        }
+        private async Task<List<UserProjectDetailsDto>> GetUserProjectDetails(ProjectModel model)
+        {
+            return model.UserProjects.Select(u => new UserProjectDetailsDto
+            {
+                UserId = u.UserId,
+                Username = u.User.UserName
+            }).ToList();
+        }
+        private async Task<List<UserProject>> MapUserProject( UpdateProjectDto updateProject,Guid projectId) {
+            return updateProject.ProjectMemberID
+              .Select(userId => new UserProject
+              {
+                  ProjectId = projectId,
+                  UserId = userId
+              }).ToList();
+        }
+        public async Task DeleteProject(Guid ProejctId) { 
+            var project = await _projectRepo.GetProjectByID(ProejctId);
+            if (project != null) {
+                throw new KeyNotFoundException("Project cannot be found with this Id");
+            }
+            await _projectRepo.DeleteProject(project);
         }
     }
 }
