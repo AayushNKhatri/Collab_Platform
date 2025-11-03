@@ -61,5 +61,5 @@ jobs:
         with:
           app-name: 'collabhq'
           slot-name: 'Production'
-          package: ./publish
+          package: .
           
