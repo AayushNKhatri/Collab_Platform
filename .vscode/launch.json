@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Collab Platform (Hot Reload)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/Collab-Platform.PresentationLayer/bin/Debug/net9.0/Collab_Platform.PresentationLayer.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/Collab-Platform.PresentationLayer",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "hotReloadEnabled": true,
+      "requireExactSource": false,
+      "justMyCode": true
+    }
+  ]
+}
