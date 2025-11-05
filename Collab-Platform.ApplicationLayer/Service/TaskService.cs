@@ -39,6 +39,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
+                //Make sure User is Added to the Project
                 await _taskRepo.CreateTask(task);
                 var userTask = new List<UserTask> {
                     new UserTask{

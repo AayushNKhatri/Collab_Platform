@@ -32,6 +32,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 UserId = u.Id,
             }).ToList();
             await _projectRepo.addUserToProject(userProject);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<ProjectModel> CreateProject(CreateProjectDto createProjectDto)
