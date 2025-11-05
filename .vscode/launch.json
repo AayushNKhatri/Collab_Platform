@@ -6,9 +6,13 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/Collab-Platform.PresentationLayer/bin/Debug/net9.0/Collab_Platform.PresentationLayer.dll",
-      "args": [],
-      "cwd": "${workspaceFolder}/Collab-Platform.PresentationLayer",
+      "program": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/Collab-Platform.PresentationLayer/Collab_Platform.PresentationLayer.csproj"
+      ],
+      "cwd": "${workspaceFolder}",
       "stopAtEntry": false,
       "console": "integratedTerminal",
       "hotReloadEnabled": true,
