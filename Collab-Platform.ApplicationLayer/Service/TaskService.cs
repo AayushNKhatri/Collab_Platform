@@ -12,11 +12,15 @@ namespace Collab_Platform.ApplicationLayer.Service
         public readonly ITaskRepo _taskRepo;
         public readonly IHelperService _helperService;
         public readonly IUnitOfWork _unitOfWork;
-        public TaskService(ITaskRepo taskRepo, IHelperService helperService, IUnitOfWork unitOfWork)
+        public readonly IProjectInterface _projectInterface;
+        public readonly IProjectRepo _projectRepo;
+        public TaskService(ITaskRepo taskRepo, IHelperService helperService, IUnitOfWork unitOfWork, IProjectInterface projectInterface, IProjectRepo projectRepo)
         {
             _taskRepo = taskRepo;
             _helperService = helperService;
             _unitOfWork = unitOfWork;
+            _projectInterface = projectInterface;
+            _projectRepo = projectRepo;
         }
         public async Task CreateTask(CreateTaskDTO createTask)
         {
@@ -39,24 +43,25 @@ namespace Collab_Platform.ApplicationLayer.Service
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
-                //Make sure User is Added to the Project
                 await _taskRepo.CreateTask(task);
-                var userTask = new List<UserTask> {
-                    new UserTask{
-                        TaskId = task.TaskId,
-                        UserId = TaskCreatorId,
-                    }
-                };
-                await _taskRepo.addUserToTask(userTask);
-                if (createTask.TaskMemberID != null)
+                var project = await _projectRepo.GetProjectByID(createTask.ProjectId);
+                var projectMember = await _projectInterface.GetUserProjectDetails(project);
+                var projectMemberID = projectMember.Select(m => m.UserId);
+                var taskMemberIds = createTask.TaskMemberID?.Distinct().ToList() ?? new List<string>();
+                var invalidUser = createTask.TaskMemberID.Where(id => !projectMemberID.Contains(id)).ToList();
+                if (invalidUser.Count > 0)
                 {
-                    var taskMember = createTask.TaskMemberID.Distinct().Select(u => new UserTask
-                    {
-                        TaskId = task.TaskId,
-                        UserId = u
-                    }).ToList();
-                    await _taskRepo.addUserToTask(taskMember);
+                    await _unitOfWork.RollBackTranctionAsync();
+                    throw new ArgumentException("Some users are not part of the project");
                 }
+                taskMemberIds.Add(TaskCreatorId);
+                taskMemberIds = taskMemberIds.Distinct().ToList();
+                var userTask = taskMemberIds.Select(u => new UserTask
+                {
+                    TaskId = task.TaskId,
+                    UserId = u
+                }).ToList();
+                await _taskRepo.addUserToTask(userTask);
                 var saveResult = await _unitOfWork.SaveChangesAsync();
                 if (saveResult <= 0) { 
                     await _unitOfWork.RollBackTranctionAsync();
@@ -65,6 +70,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 await _unitOfWork.CommitTranctionAsync();
             }
             catch {
+                await _unitOfWork.RollBackTranctionAsync();
                 throw;
             }
             

@@ -188,9 +188,6 @@ namespace Collab_Platform.ApplicationLayer.Service
                         await _projectRepo.deleteUserProject(userProjectToRemove);
                     }
                 }
-
-
-                
                     projectModel.ProjectName = updateProject.ProjectName ?? projectModel.ProjectName;
                     projectModel.ProjectDesc = updateProject.ProjectDesc ?? projectModel.ProjectDesc;
                     projectModel.EstComplete = updateProject.EstComplete ?? projectModel.EstComplete;
@@ -225,7 +222,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             }
 
         }
-        private async Task<List<UserProjectDetailsDto>> GetUserProjectDetails(ProjectModel model)
+        public async Task<List<UserProjectDetailsDto>> GetUserProjectDetails(ProjectModel model)
         {
             return model.UserProjects.Select(u => new UserProjectDetailsDto
             {
