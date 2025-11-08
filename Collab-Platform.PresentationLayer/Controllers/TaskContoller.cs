@@ -68,7 +68,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpGet("GetCreatedTask")]
         public async Task<ActionResult<APIResponse>> GetTaskByCreatorID()
         {
             var TaskDetail = await _taskInterface.GetTaskByUserID(); 
