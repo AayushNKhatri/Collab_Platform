@@ -12,5 +12,6 @@ namespace Collab_Platform.ApplicationLayer.Interface.RepoInterface
         Task<List<TaskModel>> GetAllTaskByProjectId(Guid ProjectId);
         Task addUserToTask(List<UserTask> userTasks);
         Task deleteUserFormTask(List<UserTask> userTasks);
+        Task<List<TaskModel>> GetTaskByCreator(string UserId);
     } 
 }

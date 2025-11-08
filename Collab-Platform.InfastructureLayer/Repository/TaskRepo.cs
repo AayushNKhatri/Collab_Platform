@@ -35,8 +35,24 @@ namespace Collab_Platform.InfastructureLayer.Repository
 
         public async Task<List<TaskModel>> GetTaskByUserId(string UserID)
         {
-            var task = await _db.Tasks.Include(x => x.Project).Where(x => x.CreatedById == UserID).ToListAsync();
+            var task = await _db.Tasks
+                .Include(x => x.Project)
+                .Include(x => x.TaskLeader)
+                .Include(x => x.CreatedBy)
+                .Include(x => x.UserTasks)
+                .Where(x => x.UserTasks.Any(u => u.UserId == UserID))
+                .ToListAsync();
             return task;
+        }
+
+        public async Task<List<TaskModel>> GetTaskByCreator(string UserId) {             
+            return await _db.Tasks
+                .Include(x => x.Project)
+                .Include(x => x.TaskLeader)                                                                     //This retrive the task by Creator ID
+                .Include(x => x.CreatedBy)
+                .Include(x=>x.UserTasks)
+                .Where(x => x.CreatedById == UserId)
+                .ToListAsync();
         }
 
         public async Task UpdateTask(TaskModel taskModel)

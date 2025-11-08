@@ -67,5 +67,16 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 Messege = "Sucessfully updated the Task"
             });
         }
-     }
+
+        [HttpGet]
+        public async Task<ActionResult<APIResponse>> GetTaskByCreatorID()
+        {
+            var TaskDetail = await _taskInterface.GetTaskByUserID(); 
+            return Ok(new APIResponse<List<TaskDetailDto>>(){
+                Success =true,
+                Data = TaskDetail,
+                Messege = "Sucessfully retrived the task"
+            });
+        }
+    }
 }

@@ -174,6 +174,36 @@ namespace Collab_Platform.ApplicationLayer.Service
             }
             task.TaskLeaderId = updateTask.TaskLeaderId ?? task.TaskLeaderId;
             await _unitOfWork.SaveChangesAsync();
-        }   
+        }
+
+        public async Task<List<TaskDetailDto>> GetTasksByCreatorId()
+        {
+            var UserID = _helperService.GetTokenDetails().Item1;
+            var task = await _taskRepo.GetTaskByCreator(UserID) ?? throw new KeyNotFoundException("This user dont have any task");
+            var taskDetail = task.Select( t => new TaskDetailDto
+            {
+                TaskId = t.TaskId,
+                TaskName = t.TaskName,
+                TaskDesc = t.TaskDesc,
+                TaskDueDate = t.TaskDueDate,
+                TaskStatus = t.TaskStatus,
+                Project = new ProjectDetail
+                {
+                    ProjectId = t.Project.ProjectId,
+                    ProjectName = t.Project.ProjectName,
+                },
+                TaskLeader = new TaskLeader
+                {
+                    LeaderId = t.TaskLeaderId,
+                    LeaderName = t.TaskLeader.UserName,
+                },
+                Creator = new Creator
+                {
+                    UserId = t.CreatedById,
+                    UserName = t.CreatedBy.UserName
+                }
+            }).ToList();
+            return taskDetail;
+        }
     }
 }
