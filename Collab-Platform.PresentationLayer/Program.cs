@@ -13,13 +13,22 @@ using Serilog;
 using Collab_Platform.PresentationLayer.Middleware;
 
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .WriteTo.File("logs/log.text", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
 
-
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .Enrich.WithThreadId() 
+    .Enrich.WithProcessId()
+    .Enrich.WithEnvironmentName()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log.text", rollingInterval: RollingInterval.Day)
+    .WriteTo.ApplicationInsights(
+        builder.Configuration["ApplicationInsights:ConnectionString"],
+        TelemetryConverter.Traces
+    )
+    .MinimumLevel.Information()
+    .CreateLogger();
 
 // Add services to the container.
 builder.Services.AddSwaggerGen(option =>
@@ -120,6 +129,7 @@ app.UseSwaggerUI(c =>
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSerilogRequestLogging();
 
 app.MapControllers();   
 

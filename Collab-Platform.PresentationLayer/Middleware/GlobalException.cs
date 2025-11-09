@@ -17,7 +17,12 @@ namespace Collab_Platform.PresentationLayer.Middleware
                 await _next(context);
             }
             catch (Exception e) {
-                Log.Error(e, $"Error Occurred: {e.Message}");
+                Log.Error(e,
+                    "Unhandled exception occurred. Path: {Path}, Method: {Method}, TraceId: {TraceId}",
+                    context.Request.Path,
+                    context.Request.Method,
+                    context.TraceIdentifier);
+
                 await HandleExceptionAsync(context, e);
             }
         }
@@ -37,12 +42,13 @@ namespace Collab_Platform.PresentationLayer.Middleware
                 success = false,
                 messege = e.Message,
                 error = e.GetType().Name,
-                traceID = context.TraceIdentifier
+                traceID = context.TraceIdentifier,
+                path = context.Request.Path,
             };
-
+            
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)status;
-            var option = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase};
+            var option = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase , WriteIndented = true};
             await context.Response.WriteAsync(JsonSerializer.Serialize(response, option));
         }
     }
