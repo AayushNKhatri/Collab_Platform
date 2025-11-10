@@ -12,7 +12,7 @@ namespace Collab_Platform.ApplicationLayer.DTO.ProjectDto
         public string ProjectDesc { get; set; }
         [Required]
         public PorjectVisibilityEnum PorjectVisibility { get; set; }
-        public List<string> ProjectMemberID { get; set; }
+        public List<string>? ProjectMemberID { get; set; }
         public DateTime? EstComplete { get; set; }
     }
 }
