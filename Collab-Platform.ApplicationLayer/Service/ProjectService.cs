@@ -22,7 +22,7 @@ namespace Collab_Platform.ApplicationLayer.Service
         {
             var projectId = addUserProject.ProjectId;   
             var userId = _helperService.GetTokenDetails().Item1 ?? throw new KeyNotFoundException("UserID not found");
-            var project = await _projectRepo.GetProjectByID(projectId) ?? throw new KeyNotFoundException("No project found with that id");
+            var project = await _projectRepo.GetProjectByID(projectId) ?? throw new KeyNotFoundException("No project found with given id");
             if (project.CreatorId != userId)
                 throw new InvalidOperationException("User must be the creator of this project");
             var userIdToBeAdd = addUserProject.UserId;
