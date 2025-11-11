@@ -20,12 +20,16 @@ namespace Collab_Platform.ApplicationLayer.Service
 
         public async Task AddUserToProject(AddUserProjectDto addUserProject)
         {
-            var projectId = addUserProject.ProjectId;
-            var project = await _projectRepo.GetProjectByID(projectId) ?? throw new KeyNotFoundException("No project found with tha id");
-            var userId = addUserProject.UserId;
-            var users = await _userRepo.GetMultipeUserById(userId);
+            var projectId = addUserProject.ProjectId;   
+            var userId = _helperService.GetTokenDetails().Item1 ?? throw new KeyNotFoundException("UserID not found");
+            var project = await _projectRepo.GetProjectByID(projectId) ?? throw new KeyNotFoundException("No project found with that id");
+            if (project.CreatorId != userId)
+                throw new InvalidOperationException("User must be the creator of this project");
+            var userIdToBeAdd = addUserProject.UserId;
+            var users = await _userRepo.GetMultipeUserById(userIdToBeAdd);
             if (users == null || !users.Any())
                 throw new KeyNotFoundException("No users found for given IDs");
+            if (project.UserProjects.Any(x => x.UserId == userId)) throw new InvalidOperationException("This user is already in the project");
             var userProject = users.Select(u => new UserProject
             {
                 ProjectId = projectId,
