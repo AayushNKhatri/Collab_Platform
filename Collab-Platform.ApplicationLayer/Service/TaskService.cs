@@ -45,7 +45,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 };
                 await _taskRepo.CreateTask(task);
                 var project = await _projectRepo.GetProjectByID(createTask.ProjectId);
-                var projectMember = await _projectInterface.GetUserProjectDetails(project);
+                var projectMember = await _projectInterface.GetUserProjectDetails(project) ?? throw new KeyNotFoundException("There is no member in project select member first");
                 var projectMemberID = projectMember.Select(m => m.UserId);
                 var taskMemberIds = createTask.TaskMemberID?.Distinct().ToList() ?? new List<string>();
                 var invalidUser = createTask.TaskMemberID.Where(id => !projectMemberID.Contains(id)).ToList();

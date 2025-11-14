@@ -91,25 +91,25 @@ namespace Collab_Platform.ApplicationLayer.Service
         public async Task<List<ProjectDetailDto>> GetAllProject()
         {
             var result = await _projectRepo.GetAllProject();
-            var userDetail = new List<UserProjectDetailsDto>();
-            foreach (ProjectModel proj in result) {
-                 userDetail = await GetUserProjectDetails(proj);
-            }
-            var project = result.Select(p => new ProjectDetailDto { 
-                ProjectId = p.ProjectId,
-                ProjectName = p.ProjectName,
-                ProjectDesc = p.ProjectDesc,
-                CreatorName = p.Creator.UserName,
-                PorjectVisibility = p.PorjectVisibility,
-                InviteCode = p.InviteCode,
-                StartedAt = p.StartedAt,    
-                EstComplete = p.EstComplete,
-                ActualComplete = p.ActualComplete,
-                CreatedAt = p.CreatedAt,
-                UpdatedAt = p.UpdatedAt,
-                UserDetails = userDetail
+            return result.Select(project => new ProjectDetailDto
+            {
+                ProjectId = project.ProjectId,
+                ProjectName = project.ProjectName,
+                CreatorName = project.Creator.UserName,
+                ActualComplete = project.ActualComplete,
+                PorjectVisibility = project.PorjectVisibility,
+                InviteCode = project.InviteCode,
+                ProjectDesc = project.ProjectDesc,
+                CreatedAt = project.CreatedAt,
+                EstComplete = project.EstComplete,
+                StartedAt = project.StartedAt,
+                UpdatedAt = project.UpdatedAt,
+                UserDetails = project.UserProjects.Select(up => new UserProjectDetailsDto
+                {
+                    UserId = up.UserId,
+                    Username = up.User.UserName
+                }).ToList()
             }).ToList();
-            return project;
         }
 
         public async Task<ProjectDetailDto> GetProjectById(Guid projectId)
