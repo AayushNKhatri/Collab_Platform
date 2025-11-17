@@ -46,5 +46,13 @@ namespace Collab_Platform.InfastructureLayer.Repository
         {
             return await _db.Projects.Include(u => u.UserProjects).ThenInclude(u=>u.User).ToListAsync();
         }
+
+        public async Task<List<UserProject>> GetUserProjectByUserIDs(List<string> userIDs, Guid projectId)
+        {
+            return await _db.UserProject
+                .Include(u=>u.User)
+                .Include(x=>x.Project)
+                .Where(u => u.ProjectId == projectId && userIDs.Contains(u.UserId)).ToListAsync();
+        }
     }
 }

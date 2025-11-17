@@ -18,14 +18,13 @@ namespace Collab_Platform.ApplicationLayer.Service
             _userRepo = userRepo;
         }
 
-        public async Task AddUserToProject(AddUserProjectDto addUserProject)
+        public async Task AddUserToProject(Guid projectId, List<string> UserId)
         {
-            var projectId = addUserProject.ProjectId;   
             var userId = _helperService.GetTokenDetails().userId ?? throw new KeyNotFoundException("UserID not found");
             var project = await _projectRepo.GetProjectByID(projectId) ?? throw new KeyNotFoundException("No project found with given id");
             if (project.CreatorId != userId)
                 throw new InvalidOperationException("User must be the creator of this project");
-            var userIdToBeAdd = addUserProject.UserId;
+            var userIdToBeAdd = UserId;
             var users = await _userRepo.GetMultipeUserById(userIdToBeAdd);
             if (users == null || !users.Any())
                 throw new KeyNotFoundException("No users found for given IDs");
@@ -112,6 +111,14 @@ namespace Collab_Platform.ApplicationLayer.Service
             }).ToList();
         }
 
+        public async Task RemoveUserFormProject( Guid projectId, List<string> UserID)
+        {
+            var userPorject = await _projectRepo.GetUserProjectByUserIDs(UserID, projectId);
+            if(!userPorject.Any())
+                throw new  KeyNotFoundException("No user found with that id");
+            _projectRepo.deleteUserProject(userPorject);
+        }
+
         public async Task<ProjectDetailDto> GetProjectById(Guid projectId)
         {
             var result = await _projectRepo.GetProjectByID(projectId) ?? throw new KeyNotFoundException("No Project found with that id");
@@ -168,34 +175,28 @@ namespace Collab_Platform.ApplicationLayer.Service
             try
             {
                 var projectModel = await _projectRepo.GetProjectByID(projectID) ?? throw new KeyNotFoundException("Project Not found");
-                if (updateProject.ProjectMemberID != null) {
-                    var existingUser = projectModel.UserProjects.Select(u => u.UserId).ToHashSet();
-                    var incomingUser = new HashSet<string>(updateProject.ProjectMemberID);
-                    var membersToRemove = new HashSet<string>(existingUser);
-                    //filtering users that needs to be removed
-                    membersToRemove.ExceptWith(incomingUser);
-                    //filtering users that needs to be add
-                    incomingUser.ExceptWith(existingUser);
-
-
-                if (incomingUser.Any())
-                    {
-                        //First get uerproject detail through id then remove The User Form Project same goes for add
-                        var userPorjectToAdd = await MapUserProject(updateProject, projectID);
-                        await _projectRepo.addUserToProject(userPorjectToAdd);
-                    }
-                    if (membersToRemove.Any())
-                    {
-                        var userProjectToRemove = await MapUserProject(updateProject, projectID);
-                        await _projectRepo.deleteUserProject(userProjectToRemove);
-                    }
+                var existingUser = projectModel.UserProjects
+                    .Where(u => u.UserId != projectModel.CreatorId)
+                    .Select(u => u.UserId).ToHashSet();
+                var incomingUser = new HashSet<string>(updateProject.ProjectMemberID);
+                var membersToRemove = new HashSet<string>(existingUser);
+                membersToRemove.ExceptWith(incomingUser);           //filtering users that needs to be removed
+                incomingUser.ExceptWith(existingUser);              //filtering users that needs to be add
+                if (incomingUser.Any()) //First get userproject detail through id then remove The User Form Project same goes for add
+                { 
+                    var userPorjectToAdd = await MapUserProject(incomingUser, projectID);
+                    await _projectRepo.addUserToProject(userPorjectToAdd);
                 }
-                    projectModel.ProjectName = updateProject.ProjectName ?? projectModel.ProjectName;
-                    projectModel.ProjectDesc = updateProject.ProjectDesc ?? projectModel.ProjectDesc;
-                    projectModel.EstComplete = updateProject.EstComplete ?? projectModel.EstComplete;
-                    projectModel.PorjectVisibility = updateProject.PorjectVisibility ?? projectModel.PorjectVisibility;     
-                    projectModel.UpdatedAt = DateTime.UtcNow;
-                
+                if (membersToRemove.Any())
+                {
+                    var remove= projectModel.UserProjects.Where(u => membersToRemove.Contains(u.UserId)).ToList(); //The reason not using mapp user project is the behviour between add and remove we need to use already loaded db for to remove or update the db so we mapped diretly
+                    await _projectRepo.deleteUserProject(remove); // Ef try ro cretae new row if i do map new so it will conflict
+                }
+                projectModel.ProjectName = updateProject.ProjectName; 
+                projectModel.ProjectDesc = updateProject.ProjectDesc;
+                projectModel.EstComplete = updateProject.EstComplete;
+                projectModel.PorjectVisibility = updateProject.PorjectVisibility;     
+                projectModel.UpdatedAt = DateTime.UtcNow;
 
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTranctionAsync();
@@ -232,8 +233,8 @@ namespace Collab_Platform.ApplicationLayer.Service
                 Username = u.User.UserName
             }).ToList();
         }
-        private async Task<List<UserProject>> MapUserProject( UpdateProjectDto updateProject,Guid projectId) {
-            return updateProject.ProjectMemberID
+        private async Task<List<UserProject>> MapUserProject( HashSet<string> Users,Guid projectId) {
+            return Users
               .Select(userId => new UserProject
               {
                   ProjectId = projectId,

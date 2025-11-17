@@ -45,14 +45,22 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 Messege = "Project Retrived Sucessfully"
             });
         }
-        [HttpPut("AddUser")]
+        [HttpPut("AddUser/{ProjectID}")]
         [Authorize]
-        public async Task<ActionResult<APIResponse>> AddUserToProject([FromBody] AddUserProjectDto addUserProject) {
-            await _projectService.AddUserToProject(addUserProject) ;
+        public async Task<ActionResult<APIResponse>> AddUserToProject(List<string> UserId, Guid ProjectID) {
+            await _projectService.AddUserToProject(ProjectID, UserId) ;
             return Ok(new APIResponse { 
                 Success = true,
                 Messege = "Sucessfully added user's to the project"
             });
+        }
+
+        [HttpPut("RemoveUser/{ProjectID}")]
+        [Authorize]
+        public async Task<ActionResult<APIResponse>> UpdateUserProject(List<string> UserID, Guid ProjectID)
+        {
+            await _projectService.RemoveUserFormProject(ProjectID, UserID);
+            return Ok(new APIResponse { Success = true, Messege = "User sucessfully removed form project" });
         }
         [HttpPut("{ProjectID}")]
         public async Task<ActionResult<APIResponse<ProjectDetailDto>>> UpdateProject([FromBody] UpdateProjectDto updateProject, [FromRoute]Guid ProjectID)

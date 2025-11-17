@@ -13,6 +13,6 @@ namespace Collab_Platform.ApplicationLayer.Interface.RepoInterface
         Task addUserToProject(List<UserProject> userProject);
         Task<List<ProjectModel>> GetAllProject();
         Task deleteUserProject(List<UserProject> userProjects);
-        
+        Task<List<UserProject>> GetUserProjectByUserIDs(List<string> userIDs, Guid projectId);
     }
 }
