@@ -136,14 +136,8 @@ namespace Collab_Platform.ApplicationLayer.Service
 
         public async Task<List<ProjectDetailDto>> GetProjectByUserId()
         {
-            var userDetails = new List<UserProjectDetailsDto>();
             var userId = _helperService.GetTokenDetails().Item1 ?? throw new KeyNotFoundException("UserID not found");
             var result = await _projectRepo.GetAllProjectByUserID(userId) ?? throw new KeyNotFoundException("No project found for given user");
-            foreach (var item in result)
-            {
-                userDetails = await GetUserProjectDetails(item);
-                
-            }
             var project = result.Select( p => new ProjectDetailDto{
                 ProjectId = p.ProjectId,
                 ProjectName = p.ProjectName,
@@ -156,7 +150,11 @@ namespace Collab_Platform.ApplicationLayer.Service
                 ActualComplete = p.ActualComplete,
                 CreatedAt = p.CreatedAt,
                 UpdatedAt = p.UpdatedAt,
-                UserDetails = userDetails
+                UserDetails = p.UserProjects.Select(u => new UserProjectDetailsDto
+                {
+                    UserId = u.UserId,
+                    Username = u.User.UserName
+                }).ToList()
             }).ToList();
             return project;
         }
