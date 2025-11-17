@@ -33,7 +33,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 var user = await _userRepo.GetUserByID(User.Id);
                 if (user == null) { 
                     await _unitOfWork.RollBackTranctionAsync();
-                    throw new InvalidOperationException($"User Creation Failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                    throw new InvalidOperationException($"User Creation Failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));   
                 }
                 if (!result.Succeeded) throw new ArgumentException($"The Error Occured{result.Errors.Select(e=>e.Description)}");
                 var role = "User";

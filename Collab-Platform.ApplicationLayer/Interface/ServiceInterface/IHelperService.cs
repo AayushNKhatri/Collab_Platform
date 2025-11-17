@@ -2,6 +2,6 @@
 {
     public interface IHelperService
     {
-        (string, string) GetTokenDetails();
+        (string userId, string role) GetTokenDetails();
     }
 }

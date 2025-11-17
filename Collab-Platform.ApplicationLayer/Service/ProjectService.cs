@@ -21,7 +21,7 @@ namespace Collab_Platform.ApplicationLayer.Service
         public async Task AddUserToProject(AddUserProjectDto addUserProject)
         {
             var projectId = addUserProject.ProjectId;   
-            var userId = _helperService.GetTokenDetails().Item1 ?? throw new KeyNotFoundException("UserID not found");
+            var userId = _helperService.GetTokenDetails().userId ?? throw new KeyNotFoundException("UserID not found");
             var project = await _projectRepo.GetProjectByID(projectId) ?? throw new KeyNotFoundException("No project found with given id");
             if (project.CreatorId != userId)
                 throw new InvalidOperationException("User must be the creator of this project");
@@ -42,7 +42,7 @@ namespace Collab_Platform.ApplicationLayer.Service
         public async Task<ProjectModel> CreateProject(CreateProjectDto createProjectDto)
         {
             try {
-                var userID = _helperService.GetTokenDetails().Item1 ?? throw new KeyNotFoundException("UserID not found");
+                var userID = _helperService.GetTokenDetails().userId ?? throw new KeyNotFoundException("UserID not found");
                 await _unitOfWork.BeginTranctionAsync();
                 var project = new ProjectModel {
                     ProjectId = Guid.NewGuid(),
@@ -243,10 +243,15 @@ namespace Collab_Platform.ApplicationLayer.Service
               }).ToList();
         }
         public async Task DeleteProject(Guid ProejctId) { 
+            var userID = _helperService.GetTokenDetails().userId ?? throw new KeyNotFoundException("UserID not found");
             var project = await _projectRepo.GetProjectByID(ProejctId);
-            if (project != null) {
+            if (project != null)
+            {
                 throw new KeyNotFoundException("Project cannot be found with this Id");
             }
+
+            if (project.CreatorId != userID) throw new InvalidOperationException("That is not your porject DumbAss"); 
+         
             await _projectRepo.DeleteProject(project);
         }
     }
