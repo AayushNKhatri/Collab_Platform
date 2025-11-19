@@ -51,5 +51,6 @@ namespace Collab_Platform.PresentationLayer.Middleware
             var option = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase , WriteIndented = true};
             await context.Response.WriteAsync(JsonSerializer.Serialize(response, option));
         }
+
     }
 }

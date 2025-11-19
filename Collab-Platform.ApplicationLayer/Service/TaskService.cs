@@ -28,7 +28,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             try
             {
                 if (createTask == null) throw new ArgumentNullException("Fill the create Task Proprly");
-                var TaskCreatorId = _helperService.GetTokenDetails().Item1 ?? throw new KeyNotFoundException("User id not found");
+                var TaskCreatorId = _helperService.GetTokenDetails().userId ?? throw new KeyNotFoundException("User id not found");
                 await _unitOfWork.BeginTranctionAsync();
                 var task = new TaskModel
                 {
@@ -136,7 +136,7 @@ namespace Collab_Platform.ApplicationLayer.Service
 
         public async Task<List<TaskDetailDto>> GetTaskByUserID()
         {
-            var userId = _helperService.GetTokenDetails().Item1;
+            var userId = _helperService.GetTokenDetails().userId;
             var task = await _taskRepo.GetTaskByUserId(userId) ?? throw new KeyNotFoundException("This user dont have any task assigned");
             var taskDetail = task.Select( t => new TaskDetailDto {
                 TaskId = t.TaskId,
@@ -164,7 +164,11 @@ namespace Collab_Platform.ApplicationLayer.Service
         }
         public async Task AddUserToTask(Guid TaskId, List<string> UserId)  //Validation Left
         {
+            var userId = _helperService.GetTokenDetails().userId;
             var task = await _taskRepo.GetTaskByTaskId(TaskId) ?? throw new KeyNotFoundException("Task with the given task id not found");
+            if (userId != task.TaskLeaderId || userId != task.Project.CreatorId) {
+                throw new InvalidOperationException("This is not valid");
+            }
             var existingUserTasks = task.UserTasks.Select(ut => ut.UserId).ToHashSet();
             var newUserTasks = UserId
                 .Where(userId => !existingUserTasks.Contains(userId))
@@ -205,7 +209,7 @@ namespace Collab_Platform.ApplicationLayer.Service
 
         public async Task<List<TaskDetailDto>> GetTasksByCreatorId()
         {
-            var UserID = _helperService.GetTokenDetails().Item1;
+            var UserID = _helperService.GetTokenDetails().userId;
             var task = await _taskRepo.GetTaskByCreator(UserID) ?? throw new KeyNotFoundException("This user dont have any task");
             var taskDetail = task.Select( t => new TaskDetailDto
             {

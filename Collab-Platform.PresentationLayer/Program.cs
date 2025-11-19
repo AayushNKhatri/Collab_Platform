@@ -106,6 +106,7 @@ builder.Services.AddAuthentication(options =>
 
 
 var app = builder.Build();
+app.UseMiddleware<LoggingMiddleware>();
 app.UseMiddleware<GlobalException>();
 using (var scope = app.Services.CreateScope()) { 
     var service =scope.ServiceProvider;
