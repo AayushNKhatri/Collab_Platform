@@ -4,6 +4,7 @@ using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.EnumsAndOther;
 using Collab_Platform.DomainLayer.Models;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using System.Net.WebSockets;
 
 namespace Collab_Platform.ApplicationLayer.Service
 {
@@ -160,6 +161,32 @@ namespace Collab_Platform.ApplicationLayer.Service
                 }
             }).ToList();
             return taskDetail;
+        }
+        public async Task AddUserToTask(Guid TaskId, List<string> UserId)  //Validation Left
+        {
+            var task = await _taskRepo.GetTaskByTaskId(TaskId) ?? throw new KeyNotFoundException("Task with the given task id not found");
+            var existingUserTasks = task.UserTasks.Select(ut => ut.UserId).ToHashSet();
+            var newUserTasks = UserId
+                .Where(userId => !existingUserTasks.Contains(userId))
+                .Select(userId => new UserTask
+                {
+                    TaskId = TaskId,
+                    UserId = userId
+                }).ToList();
+            _taskRepo.addUserToTask(newUserTasks);
+        }
+        public async Task RemoveUserFormTask(Guid TaskId, List<string> UserId)  //Validation Left
+        {
+            var task = await _taskRepo.GetTaskByTaskId(TaskId) ?? throw new KeyNotFoundException("Task with give task is not found");
+            var existingUserTask = task.UserTasks.Select(ut => ut.UserId).ToHashSet();
+            var userToRemove = UserId
+                .Where(userid => !existingUserTask.Contains(userid))
+                .Select(userid => new UserTask
+                {
+                    TaskId = TaskId,
+                    UserId = userid
+                }).ToList();
+            _taskRepo.deleteUserFormTask(userToRemove);
         }
 
         public async Task UpdateTask(Guid TaskId, UpdateTaskDto updateTask)
