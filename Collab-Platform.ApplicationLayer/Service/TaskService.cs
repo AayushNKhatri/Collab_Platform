@@ -28,7 +28,9 @@ namespace Collab_Platform.ApplicationLayer.Service
             try
             {
                 if (createTask == null) throw new ArgumentNullException("Fill the create Task Proprly");
+                var project = await _projectRepo.GetProjectByID(createTask.ProjectId);
                 var TaskCreatorId = _helperService.GetTokenDetails().userId ?? throw new KeyNotFoundException("User id not found");
+                if(project.CreatorId != TaskCreatorId) throw new InvalidOperationException("Task Creator id not found");
                 await _unitOfWork.BeginTranctionAsync();
                 var task = new TaskModel
                 {
@@ -40,14 +42,19 @@ namespace Collab_Platform.ApplicationLayer.Service
                     CreatedById = TaskCreatorId,
                     ProjectId = createTask.ProjectId,
                     TaskLeaderId = createTask.TaskLeaderId,
-                    UserTasks = new List<UserTask>(),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
                 await _taskRepo.CreateTask(task);
-                var project = await _projectRepo.GetProjectByID(createTask.ProjectId);
+                
                 var projectMember = await _projectInterface.GetUserProjectDetails(project) ?? throw new KeyNotFoundException("There is no member in project select member first");
-                var projectMemberID = projectMember.Select(m => m.UserId);
+                var projectMemberID = projectMember.Select(m => m.UserId).ToHashSet();
+                var taskMemberFormDTO = createTask.TaskMemberID;
+                var notInProject = taskMemberFormDTO.Except(projectMemberID);
+                if (notInProject.Any())
+                {
+                    throw new KeyNotFoundException("Task Member IDs are not part of the project");
+                }
                 var taskMemberIds = createTask.TaskMemberID?.Distinct().ToList() ?? new List<string>();
                 var invalidUser = createTask.TaskMemberID.Where(id => !projectMemberID.Contains(id)).ToList();
                 if (invalidUser.Count > 0)
@@ -195,16 +202,62 @@ namespace Collab_Platform.ApplicationLayer.Service
 
         public async Task UpdateTask(Guid TaskId, UpdateTaskDto updateTask)
         {
-            var task = await _taskRepo.GetTaskByTaskId(TaskId) ?? throw new KeyNotFoundException("Task with the given task id not found");
-            task.TaskName = updateTask.TaskName ?? task.TaskName;
-            task.TaskDesc = updateTask.TaskDesc ?? task.TaskDesc;
-            task.TaskDueDate = updateTask.TaskDueDate ?? task.TaskDueDate;
-            if (updateTask.TaskStatus != default(TaskStatusEnum))
+            await _unitOfWork.BeginTranctionAsync();
+            try
             {
+                var userId = _helperService.GetTokenDetails().userId;
+                var task = await _taskRepo.GetTaskByTaskId(TaskId) ?? throw new KeyNotFoundException("Task with the given task id not found");
+                if (task.TaskLeaderId != userId || task.Project.CreatorId != userId)
+                {
+                    throw new InvalidOperationException("You must be the creator of this task or creator of the project");
+                }
+                task.TaskName = updateTask.TaskName;
+                task.TaskDesc = updateTask.TaskDesc;
+                task.TaskDueDate = updateTask.TaskDueDate;
                 task.TaskStatus = updateTask.TaskStatus;
+                if (task.TaskLeaderId != updateTask.TaskLeaderId)
+                {
+                    task.TaskLeaderId = updateTask.TaskLeaderId;
+                    var taskLeader = task.UserTasks.Where(ut => ut.UserId == task.TaskLeaderId).ToList();
+                    await _taskRepo.deleteUserFormTask(taskLeader);
+                    var newLeader = new UserTask
+                    {
+                        UserId =  updateTask.TaskLeaderId,
+                        TaskId = TaskId
+                    };
+                    await _taskRepo.addUserToTask(taskLeader);
+                }
+                var existingTaskMember = task.UserTasks
+                        .Where(u => u.UserId == task.CreatedById)
+                        .Select(u => u.UserId).ToHashSet();
+                var incomingUser = updateTask.TaskMembers.ToHashSet();
+                var memberToRemove = existingTaskMember.Except(incomingUser).ToHashSet();
+                incomingUser.Except(memberToRemove);
+                if (incomingUser.Any())
+                {
+                    var addMember = incomingUser.Select(userId => new UserTask
+                    {
+                        UserId = userId,
+                        TaskId = TaskId,
+                    }).ToList();
+                    await _taskRepo.addUserToTask(addMember);
+                }
+
+                if (memberToRemove.Any())
+                {
+                    var deleteUser = task.UserTasks.Where(u => memberToRemove.Contains(u.UserId)).ToList();
+                    await _taskRepo.deleteUserFormTask(deleteUser);
+                }
+                
+                await _unitOfWork.SaveChangesAsync();
             }
-            task.TaskLeaderId = updateTask.TaskLeaderId ?? task.TaskLeaderId;
-            await _unitOfWork.SaveChangesAsync();
+            catch
+            {
+                await _unitOfWork.RollBackTranctionAsync();
+                throw;
+            }
+
+           
         }
 
         public async Task<List<TaskDetailDto>> GetTasksByCreatorId()
