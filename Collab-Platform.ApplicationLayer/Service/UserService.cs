@@ -57,6 +57,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 var project = await _projectRepo.GetAllProjectByUserID(userId);
                 var UserProfile = new UserProfileDto
                 {
+                    UserID = user.Id,
                     UserName = user.UserName,
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,

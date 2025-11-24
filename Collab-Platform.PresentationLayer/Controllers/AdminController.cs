@@ -47,16 +47,6 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 return StatusCode(500, new { Messege = e.Message});
             }
         }
-        [HttpGet("All-Project")]
-        public async Task<ActionResult<APIResponse>> GetAllProject()
-        {
-            var result = await _projectService.GetAllProject();
-            return Ok(new APIResponse<List<ProjectDetailDto>>
-            {
-                Success = true,
-                Data = result,
-                Messege = "Project Detail retrived"
-            });
-        }
+
     }
 }

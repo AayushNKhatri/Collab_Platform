@@ -74,5 +74,16 @@ namespace Collab_Platform.PresentationLayer.Controllers
             await _projectService.DeleteProject(ProjectID) ;
             return Ok(new APIResponse { Success = true, Messege = "Project Sucessfully deleted" });
         }
+        [HttpGet("All-Project")]
+        public async Task<ActionResult<APIResponse>> GetAllProject()
+        {
+            var result = await _projectService.GetAllProject();
+            return Ok(new APIResponse<List<ProjectDetailDto>>
+            {
+                Success = true,
+                Data = result,
+                Messege = "Project Detail retrived"
+            });
+        }
     }
 }

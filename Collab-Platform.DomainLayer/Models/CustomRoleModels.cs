@@ -1,5 +1,4 @@
-﻿using Collab_Platform.DomainLayer.EnumsAndOther;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Collab_Platform.DomainLayer.Models
 {
