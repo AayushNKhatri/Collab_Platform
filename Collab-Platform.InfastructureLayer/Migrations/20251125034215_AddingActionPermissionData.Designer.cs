@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Collab_Platform.InfastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250915160101_UpdateDB")]
-    partial class UpdateDB
+    [Migration("20251125034215_AddingActionPermissionData")]
+    partial class AddingActionPermissionData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -60,7 +60,7 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Channel");
+                    b.ToTable("Channel", (string)null);
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.ChatModel", b =>
@@ -88,10 +88,7 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjectId1")
+                    b.Property<Guid?>("ProjectId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("ReciverId")
@@ -105,13 +102,13 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
                     b.HasIndex("ChannelId");
 
-                    b.HasIndex("ProjectId1");
+                    b.HasIndex("ProjectId");
 
                     b.HasIndex("ReciverId");
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Chats");
+                    b.ToTable("Chat", (string)null);
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.CustomRoleModels", b =>
@@ -128,10 +125,6 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Permissions")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
-
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
@@ -139,16 +132,57 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
                     b.HasKey("CustomRoleId");
 
                     b.HasIndex("ProjectId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("RoleCreatorId");
 
-                    b.ToTable("CustomRoleModels");
+                    b.ToTable("CustomRoleModel", (string)null);
+                });
+
+            modelBuilder.Entity("Collab_Platform.DomainLayer.Models.CustomRoleUser", b =>
+                {
+                    b.Property<Guid>("CustomRoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserID")
+                        .HasColumnType("text");
+
+                    b.HasKey("CustomRoleId", "UserID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("CustomRole", (string)null);
+                });
+
+            modelBuilder.Entity("Collab_Platform.DomainLayer.Models.Permission", b =>
+                {
+                    b.Property<int>("PermissionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PermissionId"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("PermissionId");
+
+                    b.ToTable("Permission", (string)null);
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.ProjectModel", b =>
@@ -194,7 +228,7 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Project", (string)null);
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.ResourceModel", b =>
@@ -238,7 +272,22 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
                     b.HasIndex("UploadedById");
 
-                    b.ToTable("ResourceModels");
+                    b.ToTable("Resource", (string)null);
+                });
+
+            modelBuilder.Entity("Collab_Platform.DomainLayer.Models.RolePermissionModel", b =>
+                {
+                    b.Property<Guid>("CustomRoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CustomRoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("RolePermission", (string)null);
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.SubtaskModel", b =>
@@ -281,7 +330,7 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("Subtasks");
+                    b.ToTable("Subtask", (string)null);
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.TaskModel", b =>
@@ -328,7 +377,7 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
                     b.HasIndex("TaskLeaderId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Task", (string)null);
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.UserChannel", b =>
@@ -343,7 +392,7 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
                     b.HasIndex("ChannelId");
 
-                    b.ToTable("UserChannel");
+                    b.ToTable("UserChannel", (string)null);
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.UserModel", b =>
@@ -427,7 +476,7 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("UserProject");
+                    b.ToTable("UserProject", (string)null);
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.UserTask", b =>
@@ -442,7 +491,7 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("UserTask");
+                    b.ToTable("UserTask", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -612,9 +661,7 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
                     b.HasOne("Collab_Platform.DomainLayer.Models.ProjectModel", "Project")
                         .WithMany()
-                        .HasForeignKey("ProjectId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProjectId");
 
                     b.HasOne("Collab_Platform.DomainLayer.Models.UserModel", "Reciver")
                         .WithMany()
@@ -644,13 +691,34 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Collab_Platform.DomainLayer.Models.UserModel", "User")
+                    b.HasOne("Collab_Platform.DomainLayer.Models.UserModel", "RoleCreator")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("RoleCreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Project");
 
-                    b.Navigation("User");
+                    b.Navigation("RoleCreator");
+                });
+
+            modelBuilder.Entity("Collab_Platform.DomainLayer.Models.CustomRoleUser", b =>
+                {
+                    b.HasOne("Collab_Platform.DomainLayer.Models.CustomRoleModels", "customRole")
+                        .WithMany("CustomRoleUsers")
+                        .HasForeignKey("CustomRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Collab_Platform.DomainLayer.Models.UserModel", "user")
+                        .WithMany("CustomRoles")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("customRole");
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.ProjectModel", b =>
@@ -685,6 +753,25 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                     b.Navigation("Project");
 
                     b.Navigation("UploadedBy");
+                });
+
+            modelBuilder.Entity("Collab_Platform.DomainLayer.Models.RolePermissionModel", b =>
+                {
+                    b.HasOne("Collab_Platform.DomainLayer.Models.CustomRoleModels", "CustomRole")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("CustomRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Collab_Platform.DomainLayer.Models.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CustomRole");
+
+                    b.Navigation("Permission");
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.SubtaskModel", b =>
@@ -862,7 +949,16 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.CustomRoleModels", b =>
                 {
+                    b.Navigation("CustomRoleUsers");
+
+                    b.Navigation("RolePermissions");
+
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Collab_Platform.DomainLayer.Models.Permission", b =>
+                {
+                    b.Navigation("RolePermissions");
                 });
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.ProjectModel", b =>
@@ -885,6 +981,8 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.UserModel", b =>
                 {
+                    b.Navigation("CustomRoles");
+
                     b.Navigation("Subtasks");
 
                     b.Navigation("UserChannels");

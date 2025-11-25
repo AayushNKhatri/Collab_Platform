@@ -18,7 +18,7 @@ namespace Collab_Platform.DomainLayer.Models
         public ChatDomain ChatDomain { get; set; }
         [Required]
         public ChatTypes ChatType { get; set; }
-        public int? ProjectId { get; set; }
+        public Guid? ProjectId { get; set; }
         public ProjectModel Project { get; set; }
         public Guid? ChannelId { get; set; }
         public Channel Channel { get; set; }

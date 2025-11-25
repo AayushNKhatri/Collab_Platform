@@ -37,10 +37,10 @@ namespace Collab_Platform.InfastructureLayer.Repository
         }
         public async Task addUserToProject(List<UserProject> userProject)
         {
-            await _db.UserProject.AddRangeAsync(userProject);
+            await _db.UserProjects.AddRangeAsync(userProject);
         }
         public async Task deleteUserProject(List<UserProject> userProjects) {
-             _db.UserProject.RemoveRange(userProjects);
+             _db.UserProjects.RemoveRange(userProjects);
         }
         public async Task<List<ProjectModel>> GetAllProject()
         {
@@ -49,7 +49,7 @@ namespace Collab_Platform.InfastructureLayer.Repository
 
         public async Task<List<UserProject>> GetUserProjectByUserIDs(List<string> userIDs, Guid projectId)
         {
-            return await _db.UserProject
+            return await _db.UserProjects
                 .Include(u=>u.User)
                 .Include(x=>x.Project)
                 .Where(u => u.ProjectId == projectId && userIDs.Contains(u.UserId)).ToListAsync();

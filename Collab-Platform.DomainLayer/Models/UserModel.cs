@@ -9,6 +9,6 @@ namespace Collab_Platform.DomainLayer.Models
         public ICollection<UserTask> UserTasks { get; set; }
         public ICollection<SubtaskModel> Subtasks { get; set; }
         public ICollection<Channel> UserChannels { get; set; }
-
+        public ICollection<CustomRoleUser> CustomRoles { get; set; } = new List<CustomRoleUser>();
     }
 }

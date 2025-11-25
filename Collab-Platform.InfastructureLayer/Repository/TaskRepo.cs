@@ -60,10 +60,10 @@ namespace Collab_Platform.InfastructureLayer.Repository
             _db.Tasks.Update(taskModel);
         }
         public async Task addUserToTask(List<UserTask> userTasks) { 
-            await _db.UserTask.AddRangeAsync(userTasks);  
+            await _db.UserTasks.AddRangeAsync(userTasks);  
         }
         public async Task deleteUserFormTask(List<UserTask> userTasks) {
-            _db.UserTask.RemoveRange(userTasks);
+            _db.UserTasks.RemoveRange(userTasks);
         }
     }
 }

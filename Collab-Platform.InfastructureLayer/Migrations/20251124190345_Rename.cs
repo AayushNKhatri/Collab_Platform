@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Collab_Platform.InfastructureLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Rename : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,6 +24,22 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Permission",
+                columns: table => new
+                {
+                    PermissionId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Key = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Category = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Permission", x => x.PermissionId);
                 });
 
             migrationBuilder.CreateTable(
@@ -141,16 +157,15 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Projects",
+                name: "Project",
                 columns: table => new
                 {
                     ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     ProjectName = table.Column<string>(type: "text", nullable: false),
-                    ProejctDesc = table.Column<string>(type: "text", nullable: false),
+                    ProjectDesc = table.Column<string>(type: "text", nullable: false),
                     CreatorId = table.Column<string>(type: "text", nullable: false),
                     PorjectVisibility = table.Column<int>(type: "integer", nullable: false),
                     InviteCode = table.Column<string>(type: "text", nullable: true),
-                    IsPublic = table.Column<bool>(type: "boolean", nullable: false),
                     StartedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EstComplete = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ActualComplete = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -159,9 +174,9 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Projects", x => x.ProjectId);
+                    table.PrimaryKey("PK_Project", x => x.ProjectId);
                     table.ForeignKey(
-                        name: "FK_Projects_AspNetUsers_CreatorId",
+                        name: "FK_Project_AspNetUsers_CreatorId",
                         column: x => x.CreatorId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -196,43 +211,42 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Channel_Projects_ProjectId",
+                        name: "FK_Channel_Project_ProjectId",
                         column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        principalTable: "Project",
                         principalColumn: "ProjectId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CustomRoleModels",
+                name: "CustomRoleModel",
                 columns: table => new
                 {
                     CustomRoleId = table.Column<Guid>(type: "uuid", nullable: false),
                     CustomRoleName = table.Column<string>(type: "text", nullable: false),
                     CustomRoleDesc = table.Column<string>(type: "text", nullable: false),
-                    Permissions = table.Column<string>(type: "jsonb", nullable: false),
                     ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RoleCreatorId = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true)
+                    RoleCreatorId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CustomRoleModels", x => x.CustomRoleId);
+                    table.PrimaryKey("PK_CustomRoleModel", x => x.CustomRoleId);
                     table.ForeignKey(
-                        name: "FK_CustomRoleModels_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_CustomRoleModel_AspNetUsers_RoleCreatorId",
+                        column: x => x.RoleCreatorId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CustomRoleModels_Projects_ProjectId",
+                        name: "FK_CustomRoleModel_Project_ProjectId",
                         column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        principalTable: "Project",
                         principalColumn: "ProjectId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tasks",
+                name: "Task",
                 columns: table => new
                 {
                     TaskId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -248,23 +262,23 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tasks", x => x.TaskId);
+                    table.PrimaryKey("PK_Task", x => x.TaskId);
                     table.ForeignKey(
-                        name: "FK_Tasks_AspNetUsers_CreatedById",
+                        name: "FK_Task_AspNetUsers_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Tasks_AspNetUsers_TaskLeaderId",
+                        name: "FK_Task_AspNetUsers_TaskLeaderId",
                         column: x => x.TaskLeaderId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Tasks_Projects_ProjectId",
+                        name: "FK_Task_Project_ProjectId",
                         column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        principalTable: "Project",
                         principalColumn: "ProjectId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -286,15 +300,15 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserProject_Projects_ProjectId",
+                        name: "FK_UserProject_Project_ProjectId",
                         column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        principalTable: "Project",
                         principalColumn: "ProjectId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Chats",
+                name: "Chat",
                 columns: table => new
                 {
                     ChatId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -303,42 +317,40 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                     ReciverId = table.Column<string>(type: "text", nullable: true),
                     ChatDomain = table.Column<int>(type: "integer", nullable: false),
                     ChatType = table.Column<int>(type: "integer", nullable: false),
-                    ProjectId = table.Column<int>(type: "integer", nullable: true),
-                    ProjectId1 = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProjectId = table.Column<Guid>(type: "uuid", nullable: true),
                     ChannelId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsRead = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Chats", x => x.ChatId);
+                    table.PrimaryKey("PK_Chat", x => x.ChatId);
                     table.ForeignKey(
-                        name: "FK_Chats_AspNetUsers_ReciverId",
+                        name: "FK_Chat_AspNetUsers_ReciverId",
                         column: x => x.ReciverId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Chats_AspNetUsers_SenderId",
+                        name: "FK_Chat_AspNetUsers_SenderId",
                         column: x => x.SenderId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Chats_Channel_ChannelId",
+                        name: "FK_Chat_Channel_ChannelId",
                         column: x => x.ChannelId,
                         principalTable: "Channel",
                         principalColumn: "ChannelId");
                     table.ForeignKey(
-                        name: "FK_Chats_Projects_ProjectId1",
-                        column: x => x.ProjectId1,
-                        principalTable: "Projects",
-                        principalColumn: "ProjectId",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Chat_Project_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Project",
+                        principalColumn: "ProjectId");
                 });
 
             migrationBuilder.CreateTable(
-                name: "ResourceModels",
+                name: "Resource",
                 columns: table => new
                 {
                     ResourceId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -353,22 +365,22 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ResourceModels", x => x.ResourceId);
+                    table.PrimaryKey("PK_Resource", x => x.ResourceId);
                     table.ForeignKey(
-                        name: "FK_ResourceModels_AspNetUsers_UploadedById",
+                        name: "FK_Resource_AspNetUsers_UploadedById",
                         column: x => x.UploadedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ResourceModels_Channel_ChannelId",
+                        name: "FK_Resource_Channel_ChannelId",
                         column: x => x.ChannelId,
                         principalTable: "Channel",
                         principalColumn: "ChannelId");
                     table.ForeignKey(
-                        name: "FK_ResourceModels_Projects_ProjectId",
+                        name: "FK_Resource_Project_ProjectId",
                         column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        principalTable: "Project",
                         principalColumn: "ProjectId");
                 });
 
@@ -397,7 +409,55 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Subtasks",
+                name: "CustomRole",
+                columns: table => new
+                {
+                    UserID = table.Column<string>(type: "text", nullable: false),
+                    CustomRoleId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomRole", x => new { x.CustomRoleId, x.UserID });
+                    table.ForeignKey(
+                        name: "FK_CustomRole_AspNetUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CustomRole_CustomRoleModel_CustomRoleId",
+                        column: x => x.CustomRoleId,
+                        principalTable: "CustomRoleModel",
+                        principalColumn: "CustomRoleId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RolePermission",
+                columns: table => new
+                {
+                    PermissionId = table.Column<int>(type: "integer", nullable: false),
+                    CustomRoleId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RolePermission", x => new { x.CustomRoleId, x.PermissionId });
+                    table.ForeignKey(
+                        name: "FK_RolePermission_CustomRoleModel_CustomRoleId",
+                        column: x => x.CustomRoleId,
+                        principalTable: "CustomRoleModel",
+                        principalColumn: "CustomRoleId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RolePermission_Permission_PermissionId",
+                        column: x => x.PermissionId,
+                        principalTable: "Permission",
+                        principalColumn: "PermissionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subtask",
                 columns: table => new
                 {
                     SubtaskId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -412,23 +472,23 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subtasks", x => x.SubtaskId);
+                    table.PrimaryKey("PK_Subtask", x => x.SubtaskId);
                     table.ForeignKey(
-                        name: "FK_Subtasks_AspNetUsers_AssignedToId",
+                        name: "FK_Subtask_AspNetUsers_AssignedToId",
                         column: x => x.AssignedToId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Subtasks_AspNetUsers_CreatedById",
+                        name: "FK_Subtask_AspNetUsers_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Subtasks_Tasks_TaskId",
+                        name: "FK_Subtask_Task_TaskId",
                         column: x => x.TaskId,
-                        principalTable: "Tasks",
+                        principalTable: "Task",
                         principalColumn: "TaskId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -450,9 +510,9 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserTask_Tasks_TaskId",
+                        name: "FK_UserTask_Task_TaskId",
                         column: x => x.TaskId,
-                        principalTable: "Tasks",
+                        principalTable: "Task",
                         principalColumn: "TaskId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -515,83 +575,93 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_ChannelId",
-                table: "Chats",
+                name: "IX_Chat_ChannelId",
+                table: "Chat",
                 column: "ChannelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_ProjectId1",
-                table: "Chats",
-                column: "ProjectId1");
+                name: "IX_Chat_ProjectId",
+                table: "Chat",
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_ReciverId",
-                table: "Chats",
+                name: "IX_Chat_ReciverId",
+                table: "Chat",
                 column: "ReciverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_SenderId",
-                table: "Chats",
+                name: "IX_Chat_SenderId",
+                table: "Chat",
                 column: "SenderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomRoleModels_ProjectId",
-                table: "CustomRoleModels",
+                name: "IX_CustomRole_UserID",
+                table: "CustomRole",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomRoleModel_ProjectId",
+                table: "CustomRoleModel",
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomRoleModels_UserId",
-                table: "CustomRoleModels",
-                column: "UserId");
+                name: "IX_CustomRoleModel_RoleCreatorId",
+                table: "CustomRoleModel",
+                column: "RoleCreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_CreatorId",
-                table: "Projects",
+                name: "IX_Project_CreatorId",
+                table: "Project",
                 column: "CreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ResourceModels_ChannelId",
-                table: "ResourceModels",
+                name: "IX_Resource_ChannelId",
+                table: "Resource",
                 column: "ChannelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ResourceModels_ProjectId",
-                table: "ResourceModels",
+                name: "IX_Resource_ProjectId",
+                table: "Resource",
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ResourceModels_UploadedById",
-                table: "ResourceModels",
+                name: "IX_Resource_UploadedById",
+                table: "Resource",
                 column: "UploadedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Subtasks_AssignedToId",
-                table: "Subtasks",
+                name: "IX_RolePermission_PermissionId",
+                table: "RolePermission",
+                column: "PermissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subtask_AssignedToId",
+                table: "Subtask",
                 column: "AssignedToId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Subtasks_CreatedById",
-                table: "Subtasks",
+                name: "IX_Subtask_CreatedById",
+                table: "Subtask",
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Subtasks_TaskId",
-                table: "Subtasks",
+                name: "IX_Subtask_TaskId",
+                table: "Subtask",
                 column: "TaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_CreatedById",
-                table: "Tasks",
+                name: "IX_Task_CreatedById",
+                table: "Task",
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_ProjectId",
-                table: "Tasks",
+                name: "IX_Task_ProjectId",
+                table: "Task",
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_TaskLeaderId",
-                table: "Tasks",
+                name: "IX_Task_TaskLeaderId",
+                table: "Task",
                 column: "TaskLeaderId");
 
             migrationBuilder.CreateIndex(
@@ -634,10 +704,10 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUsers_CustomRoleModels_CustomRoleModelsCustomRoleId",
+                name: "FK_AspNetUsers_CustomRoleModel_CustomRoleModelsCustomRoleId",
                 table: "AspNetUsers",
                 column: "CustomRoleModelsCustomRoleId",
-                principalTable: "CustomRoleModels",
+                principalTable: "CustomRoleModel",
                 principalColumn: "CustomRoleId");
         }
 
@@ -645,12 +715,12 @@ namespace Collab_Platform.InfastructureLayer.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_CustomRoleModels_AspNetUsers_UserId",
-                table: "CustomRoleModels");
+                name: "FK_CustomRoleModel_AspNetUsers_RoleCreatorId",
+                table: "CustomRoleModel");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Projects_AspNetUsers_CreatorId",
-                table: "Projects");
+                name: "FK_Project_AspNetUsers_CreatorId",
+                table: "Project");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -668,13 +738,19 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Chats");
+                name: "Chat");
 
             migrationBuilder.DropTable(
-                name: "ResourceModels");
+                name: "CustomRole");
 
             migrationBuilder.DropTable(
-                name: "Subtasks");
+                name: "Resource");
+
+            migrationBuilder.DropTable(
+                name: "RolePermission");
+
+            migrationBuilder.DropTable(
+                name: "Subtask");
 
             migrationBuilder.DropTable(
                 name: "UserChannel");
@@ -689,19 +765,22 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Permission");
+
+            migrationBuilder.DropTable(
                 name: "Channel");
 
             migrationBuilder.DropTable(
-                name: "Tasks");
+                name: "Task");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "CustomRoleModels");
+                name: "CustomRoleModel");
 
             migrationBuilder.DropTable(
-                name: "Projects");
+                name: "Project");
         }
     }
 }

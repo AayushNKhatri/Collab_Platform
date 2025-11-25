@@ -1,0 +1,4 @@
+{
+  "appService.defaultWebAppToDeploy": "/subscriptions/e3d40580-9900-47f2-9860-1796da24be42/resourceGroups/Hello/providers/Microsoft.Web/sites/collabhq",
+  "appService.deploySubpath": "."
+}
