@@ -5,12 +5,12 @@
 namespace Collab_Platform.InfastructureLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingActionPermissionData : Migration
+    public partial class AddingActionPermissionDataAll : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"
+                        migrationBuilder.Sql(@"
                  INSERT INTO ""Permission"" (""Key"",""name"",""Description"",""Category"")
                  VALUES
                  ('task_create', 'Create Task', 'Allow User to create task', 'TaskContoller'),
@@ -25,7 +25,7 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                  ('subtask_create', 'Create Subtask', 'Allow User to Create Subtask', 'SubtaskController'),
                  ('resource_create', 'Create Resource', 'Allow User to Create Resource', 'ResourceController'),
                  ('resource_edit', 'Edit Resource', 'Allow User to Create Resource', 'ResourceController'),
-                 ('resource_delete', 'Delete Resource', 'Allow User to Delete Resource', 'ResourceController'),
+                 ('resource_delete', 'Delete Resource', 'Allow User to Delete Resource', 'ResourceController');
              ");
         }
 

@@ -15,6 +15,7 @@ namespace Collab_Platform.InfastructureLayer.DI
             services.AddScoped<IEmailRepo, EmailRepo>();
             services.AddScoped<ISeedService, SeedDB>();
             services.AddScoped<ITaskRepo, TaskRepo>();
+            services.AddScoped<IPermissionRepo, PermissionRepo>();
             return services;
         } 
     }

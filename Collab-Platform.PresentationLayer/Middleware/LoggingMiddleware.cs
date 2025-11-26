@@ -37,7 +37,7 @@ namespace Collab_Platform.PresentationLayer.Middleware
             Log.Information("Outgoing Response: {statusCode} Body: {body}",
                             context.Response.StatusCode,
                             responseText);
-
+            context.Response.Headers.ContentLength = null;
             await newResponseBody.CopyToAsync(originalResponseBody);
             context.Response.Body = originalResponseBody;
         }
