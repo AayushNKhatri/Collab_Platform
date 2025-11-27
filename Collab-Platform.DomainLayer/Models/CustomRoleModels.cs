@@ -15,8 +15,8 @@ namespace Collab_Platform.DomainLayer.Models
         public string RoleCreatorId { get; set; }
         public UserModel RoleCreator { get; set; }
         public ICollection<UserModel> Users { get; set; } = new List<UserModel>();
-        public ICollection<RolePermissionModel> RolePermissions { get; set;} = new List<RolePermissionModel>();
-        public ICollection<CustomRoleUser> CustomRoleUsers { get; set; } = new List<CustomRoleUser>();
+        public ICollection<RolePermissionModel> RolePermissions { get; set; }
+        public ICollection<CustomRoleUser> CustomRoleUsers { get; set; }
 
     }
 }

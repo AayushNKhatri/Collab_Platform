@@ -12,9 +12,9 @@ namespace Collab_Platform.InfastructureLayer.Repository
         {
             _db = db;
         }
-        public Task<List<Permission>> GetAllPermission()
+        public async Task<List<Permission>> GetAllPermission()
         {
-            return _db.Permissions.ToListAsync();
+            return await _db.Permissions.ToListAsync();
         }
     }
 }
