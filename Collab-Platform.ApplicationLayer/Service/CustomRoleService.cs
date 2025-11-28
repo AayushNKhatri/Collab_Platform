@@ -41,5 +41,21 @@ namespace Collab_Platform.ApplicationLayer.Service
             };
             return response; 
         }
+        public async Task<List<ProjectRoleDetailDTO>> GetAllCustomRoleByProject (Guid ProjectID)
+        {
+            var customRole = await _customRole.GetAllCustomRoleByProject(ProjectID);
+            var permission = customRole.Select(u => u.RolePermissions.Select(u => u.Permission));
+            var user = customRole.Select(u => u.CustomRoleUsers.Select(u => u.user));
+            var ProjectRoleDetail = customRole.Select(u => new ProjectRoleDetailDTO{
+                    CustomRoleId = u.CustomRoleId,
+                    CustomRoleDesc = u.CustomRoleDesc,
+                    CustomRoleName = u.CustomRoleName,
+                    ProjectID = u.ProjectId,
+                    ProjectName = u.Project.ProjectName,
+                    RoleCreatorId = u.RoleCreatorId,
+                    RoleCreatorName = u.CustomRoleName,
+                    permission = permission.Select(u => )
+                );
+        }
     }
 }
