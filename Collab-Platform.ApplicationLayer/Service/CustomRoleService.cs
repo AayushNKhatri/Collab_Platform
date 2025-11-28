@@ -44,18 +44,32 @@ namespace Collab_Platform.ApplicationLayer.Service
         public async Task<List<ProjectRoleDetailDTO>> GetAllCustomRoleByProject (Guid ProjectID)
         {
             var customRole = await _customRole.GetAllCustomRoleByProject(ProjectID);
-            var permission = customRole.Select(u => u.RolePermissions.Select(u => u.Permission));
-            var user = customRole.Select(u => u.CustomRoleUsers.Select(u => u.user));
-            var ProjectRoleDetail = customRole.Select(u => new ProjectRoleDetailDTO{
-                    CustomRoleId = u.CustomRoleId,
-                    CustomRoleDesc = u.CustomRoleDesc,
-                    CustomRoleName = u.CustomRoleName,
-                    ProjectID = u.ProjectId,
-                    ProjectName = u.Project.ProjectName,
-                    RoleCreatorId = u.RoleCreatorId,
-                    RoleCreatorName = u.CustomRoleName,
-                    permission = permission.Select(u => )
-                );
+            var ProjectRoleDetail = customRole.Select(u => new ProjectRoleDetailDTO
+            {
+                CustomRoleId = u.CustomRoleId,
+                CustomRoleDesc = u.CustomRoleDesc,
+                CustomRoleName = u.CustomRoleName,
+                ProjectID = u.ProjectId,
+                ProjectName = u.Project.ProjectName,
+                RoleCreatorId = u.RoleCreatorId,
+                RoleCreatorName = u.RoleCreator.UserName,
+                permission = u.RolePermissions.Select(u => 
+                    new PermissionDTO
+                    {
+                        PermissionId = u.Permission.PermissionId,
+                        PermissionKey = u.Permission.Key,
+                    }
+                ).ToList(),
+                RoleUser = u.CustomRoleUsers.Select(u => new RoleUserDTO { 
+                    UserID = u.user.Id,
+                    UserName = u.user.UserName
+                }).ToList()
+            }).ToList();
+            return ProjectRoleDetail; 
+        }
+        public Task CreateCutomeRole(CretaeCustomRoleDTO cretaeCustomRole, Guid ProjectID)
+        { 
+                 
         }
     }
 }
