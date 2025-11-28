@@ -67,9 +67,9 @@ namespace Collab_Platform.ApplicationLayer.Service
             }).ToList();
             return ProjectRoleDetail; 
         }
-        public Task CreateCutomeRole(CretaeCustomRoleDTO cretaeCustomRole, Guid ProjectID)
-        { 
+        //public Task CreateCutomeRole(CretaeCustomRoleDTO cretaeCustomRole, Guid ProjectID)
+        //{ 
                  
-        }
+        //}
     }
 }
