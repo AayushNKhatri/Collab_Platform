@@ -114,7 +114,12 @@ namespace Collab_Platform.ApplicationLayer.Service
                 await _unitOfWork.RollBackTranctionAsync();
                 throw;
             }
-            
-        }   
+        }
+
+        public async Task DeleteCustomRole(Guid RoleId) 
+        {
+            var customRole = _customRole.GetCustomRoleByRoleID(RoleId) ?? throw new KeyNotFoundException("This Role name does not exist with this id");
+            _customRole.RemoveRole(customRole);
+        }
     }
 }

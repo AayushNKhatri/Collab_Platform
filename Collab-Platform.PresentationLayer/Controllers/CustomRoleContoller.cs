@@ -37,7 +37,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpPost("{ProjectID}")]
-        public async Task<ActionResult<APIResponse>> AddRoleToProejct(Guid ProjectID, [FromBody] CretaeCustomRoleDTO createRole) {
+        public async Task<ActionResult<APIResponse>> CreateRole(Guid ProjectID, [FromBody] CretaeCustomRoleDTO createRole) {
             await _customRoleInterface.CreateCutomeRole(createRole, ProjectID);
             return Ok(
                 new APIResponse { 
@@ -45,6 +45,10 @@ namespace Collab_Platform.PresentationLayer.Controllers
                     Messege = "Role Created Sucessfully"
                 }    
             );
+        }
+        [HttpDelete("{RoleId}")]
+        public async Task<ActionResult> DeleteProjectRole(Guid RoleId) {
+            return Ok();
         }
     }
 }

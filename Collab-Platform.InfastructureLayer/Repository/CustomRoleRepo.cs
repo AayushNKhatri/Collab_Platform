@@ -27,6 +27,13 @@ namespace Collab_Platform.InfastructureLayer.Repository
               .ThenInclude(u => u.Permission)
               .FirstOrDefaultAsync(u => u.CustomRoleId == CustomRoleID);
         }
+        public async Task<List<CustomRoleModels>> GetCustomRoleByMultiID(List<Guid> CustomRoleID) { 
+            return await _db.CustomRoleModels.Include(u => u.CustomRoleUsers)
+              .ThenInclude(u => u.user)
+              .Include(u => u.RolePermissions)
+              .ThenInclude(u => u.Permission)
+              
+        }
         public async Task AddCutomRole(CustomRoleModels roleModel) {
            _db.CustomRoleModels.Add(roleModel);
         }
