@@ -33,5 +33,9 @@ namespace Collab_Platform.InfastructureLayer.Repository
         public async Task RemoveRole(CustomRoleModels roleModels) {
             _db.CustomRoleModels.Remove(roleModels);
         }
+        public async Task AddUserToRole(List<CustomRoleUser> customRoleUsers)
+        {
+            await _db.RoleUsers.AddRangeAsync(customRoleUsers);
+        }
     }
 }

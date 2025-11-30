@@ -20,6 +20,7 @@ namespace Collab_Platform.InfastructureLayer.Database
         public DbSet<UserProject> UserProjects { get; set; }
         public DbSet<UserTask> UserTasks { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+        public DbSet<CustomRoleUser> RoleUsers {get; set;}
         public DbSet<RolePermissionModel> RolePermissions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) { 

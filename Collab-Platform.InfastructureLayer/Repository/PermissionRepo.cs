@@ -16,5 +16,9 @@ namespace Collab_Platform.InfastructureLayer.Repository
         {
             return await _db.Permissions.ToListAsync();
         }
+        public async Task addPermissionToRole(List<RolePermissionModel> role)
+        {
+            await _db.RolePermissions.AddRangeAsync(role);
+        }
     }
 }

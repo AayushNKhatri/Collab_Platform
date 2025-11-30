@@ -1,6 +1,8 @@
-﻿using Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO;
+﻿using System.Runtime.CompilerServices;
+using Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
+using Collab_Platform.DomainLayer.Models;
 
 namespace Collab_Platform.ApplicationLayer.Service
 {
@@ -8,10 +10,15 @@ namespace Collab_Platform.ApplicationLayer.Service
     {
         public readonly ICustomRoleRepo _customRole;
         public readonly IPermissionRepo _permissionRepo;
-        public CustomRoleService(ICustomRoleRepo customRole, IPermissionRepo permissionRepo)
+        public readonly IHelperService _helperService;
+        public readonly IProjectInterface _projectService;
+        public readonly IUnitOfWork _unitOfWork;
+        public CustomRoleService(ICustomRoleRepo customRole, IPermissionRepo permissionRepo, IHelperService helperService, IProjectInterface prjectService)
         {
             _customRole = customRole;
             _permissionRepo = permissionRepo;
+            _helperService = helperService;
+            _projectService = prjectService;
         }
 
         public async Task<ProjectRoleDetailDTO> GetAllCutomRoleByRoleID(Guid CustomRoleID)
@@ -67,9 +74,51 @@ namespace Collab_Platform.ApplicationLayer.Service
             }).ToList();
             return ProjectRoleDetail; 
         }
-        //public Task CreateCutomeRole(CretaeCustomRoleDTO cretaeCustomRole, Guid ProjectID)
-        //{ 
-                 
-        //}
+        public async Task CreateCutomeRole(CretaeCustomRoleDTO cretaeCustomRole, Guid ProjectID) //Need to add try catch and tranctaion
+        { 
+            var userID = _helperService.GetTokenDetails().userId;
+            try
+            {
+            var project = await _projectService.GetProjectById(ProjectID) ?? throw new KeyNotFoundException("No project found with that id");
+            await _unitOfWork.BeginTranctionAsync();
+            var customRole = new CustomRoleModels
+            {
+                CustomRoleId = new Guid(),
+                CustomRoleDesc = cretaeCustomRole.CustomRoleDesc,                 
+                CustomRoleName = cretaeCustomRole.CustomRoleName,
+                ProjectId = project.ProjectId,
+                RoleCreatorId = userID,
+            };
+            await _customRole.AddCutomRole(customRole);
+            await _unitOfWork.SaveChangesAsync();
+            if (cretaeCustomRole.PermissionId.Count > 0)
+            {
+                var role = cretaeCustomRole.PermissionId.Select(u => new RolePermissionModel
+                {
+                    PermissionId = u,
+                    CustomRoleId = customRole.CustomRoleId,
+                }).ToList();
+                await _permissionRepo.addPermissionToRole(role);
+                await _unitOfWork.SaveChangesAsync();
+            }
+            if (cretaeCustomRole.UserId.Count > 0)
+            {
+                var user = cretaeCustomRole.UserId.Select( u => new CustomRoleUser
+                {
+                   UserID = u,
+                   CustomRoleId = customRole.CustomRoleId 
+                }).ToList();
+                await _customRole.AddUserToRole(user);
+                await _unitOfWork.SaveChangesAsync();
+            }
+                await _unitOfWork.CommitTranctionAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollBackTranctionAsync();
+                throw;
+            }
+            
+        }   
     }
 }

@@ -8,5 +8,6 @@ namespace Collab_Platform.ApplicationLayer.Interface.RepoInterface
         Task<CustomRoleModels?> GetCustomRoleByRoleID(Guid CustomRoleID);
         Task AddCutomRole(CustomRoleModels roleModel);
         Task RemoveRole(CustomRoleModels roleModels);
+        Task AddUserToRole(List<CustomRoleUser> roleUser);
     }
 }

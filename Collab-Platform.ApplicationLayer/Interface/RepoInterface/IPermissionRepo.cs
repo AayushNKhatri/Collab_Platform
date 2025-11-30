@@ -9,5 +9,6 @@ namespace Collab_Platform.ApplicationLayer.Interface.RepoInterface
     public interface IPermissionRepo
     {
         Task<List<Permission>> GetAllPermission();
+        Task addPermissionToRole(List<RolePermissionModel> role);
     }
 }
