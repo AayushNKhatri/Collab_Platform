@@ -6,6 +6,6 @@ namespace Collab_Platform.ApplicationLayer.Interface.ServiceInterface
     {
         Task<ProjectRoleDetailDTO> GetAllCutomRoleByRoleID(Guid CustomRoleID);
         Task<List<ProjectRoleDetailDTO>> GetAllCustomRoleByProject(Guid ProjectID);
-
+        Task CreateCutomeRole(CretaeCustomRoleDTO createCustomRole, Guid ProjectID);
     }
 }

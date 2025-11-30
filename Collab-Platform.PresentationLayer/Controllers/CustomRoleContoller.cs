@@ -34,7 +34,17 @@ namespace Collab_Platform.PresentationLayer.Controllers
                     Data = customRole,
                     Messege = "Custome Role Retrived Sucessfully"
                 }
-                );
+            );
+        }
+        [HttpPost("{ProjectID}")]
+        public async Task<ActionResult<APIResponse>> AddRoleToProejct(Guid ProjectID, [FromBody] CretaeCustomRoleDTO createRole) {
+            await _customRoleInterface.CreateCutomeRole(createRole, ProjectID);
+            return Ok(
+                new APIResponse { 
+                    Success = true,
+                    Messege = "Role Created Sucessfully"
+                }    
+            );
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO;
+﻿using Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
@@ -74,7 +73,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             }).ToList();
             return ProjectRoleDetail; 
         }
-        public async Task CreateCutomeRole(CretaeCustomRoleDTO cretaeCustomRole, Guid ProjectID) //Need to add try catch and tranctaion
+        public async Task CreateCutomeRole(CretaeCustomRoleDTO createCustomRole, Guid ProjectID) //Need to add try catch and tranctaion
         { 
             var userID = _helperService.GetTokenDetails().userId;
             try
@@ -84,32 +83,29 @@ namespace Collab_Platform.ApplicationLayer.Service
             var customRole = new CustomRoleModels
             {
                 CustomRoleId = new Guid(),
-                CustomRoleDesc = cretaeCustomRole.CustomRoleDesc,                 
-                CustomRoleName = cretaeCustomRole.CustomRoleName,
+                CustomRoleDesc = createCustomRole.CustomRoleDesc,                 
+                CustomRoleName = createCustomRole.CustomRoleName,
                 ProjectId = project.ProjectId,
                 RoleCreatorId = userID,
             };
             await _customRole.AddCutomRole(customRole);
-            await _unitOfWork.SaveChangesAsync();
-            if (cretaeCustomRole.PermissionId.Count > 0)
+            if (createCustomRole.PermissionId.Count > 0)
             {
-                var role = cretaeCustomRole.PermissionId.Select(u => new RolePermissionModel
+                var role = createCustomRole.PermissionId.Select(u => new RolePermissionModel
                 {
                     PermissionId = u,
                     CustomRoleId = customRole.CustomRoleId,
                 }).ToList();
                 await _permissionRepo.addPermissionToRole(role);
-                await _unitOfWork.SaveChangesAsync();
             }
-            if (cretaeCustomRole.UserId.Count > 0)
+            if (createCustomRole.UserId.Count > 0)
             {
-                var user = cretaeCustomRole.UserId.Select( u => new CustomRoleUser
+                var user = createCustomRole.UserId.Select( u => new CustomRoleUser
                 {
                    UserID = u,
                    CustomRoleId = customRole.CustomRoleId 
                 }).ToList();
                 await _customRole.AddUserToRole(user);
-                await _unitOfWork.SaveChangesAsync();
             }
                 await _unitOfWork.CommitTranctionAsync();
             }
