@@ -204,7 +204,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 var userDetails = await GetUserProjectDetails(projectModel);
                 var projectDetail = new ProjectDetailDto
                 {
-                    ProjectId = projectModel.ProjectId,
+                    ProjectId = projectModel.ProjectId, 
                     ProjectName = projectModel.ProjectName,
                     ProjectDesc = projectModel.ProjectDesc,
                     CreatorName = projectModel.Creator.UserName,
