@@ -8,5 +8,6 @@ namespace Collab_Platform.ApplicationLayer.Interface.ServiceInterface
         Task<List<ProjectRoleDetailDTO>> GetAllCustomRoleByProject(Guid ProjectID);
         Task CreateCutomeRole(CretaeCustomRoleDTO createCustomRole, Guid ProjectID);
         Task DeleteCustomRole(Guid RoleId);
+        Task UpdateCustomRole(Guid RoleID, UpdateCustomRoleDTO updateCustomRole)
     }
 }

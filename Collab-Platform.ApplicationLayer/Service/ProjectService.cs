@@ -83,6 +83,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 return result;
             }
             catch{
+                await _unitOfWork.RollBackTranctionAsync();
                 throw;
             }
         }
@@ -171,9 +172,9 @@ namespace Collab_Platform.ApplicationLayer.Service
             if (updateProject == null)
                 throw new ArgumentNullException("Update Project is required to update the project.");
 
-            await _unitOfWork.BeginTranctionAsync();
             try
             {
+                await _unitOfWork.BeginTranctionAsync();
                 var projectModel = await _projectRepo.GetProjectByID(projectID) ?? throw new KeyNotFoundException("Project Not found");
                 var existingUser = projectModel.UserProjects
                     .Where(u => u.UserId != projectModel.CreatorId)

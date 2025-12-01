@@ -50,5 +50,8 @@ namespace Collab_Platform.InfastructureLayer.Repository
         {
             await _db.RoleUsers.AddRangeAsync(customRoleUsers);
         }
+        public async Task UserFormRole(List<CustomRoleUser> customRoleUsers) {
+            _db.RoleUsers.RemoveRange(customRoleUsers);
+        }
     }
 }

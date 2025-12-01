@@ -75,7 +75,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             }).ToList();
             return ProjectRoleDetail;
         }
-        public async Task CreateCutomeRole(CretaeCustomRoleDTO createCustomRole, Guid ProjectID) //Need to add try catch and tranctaion
+        public async Task CreateCutomeRole(CretaeCustomRoleDTO createCustomRole, Guid ProjectID)
         {
             var userID = _helperService.GetTokenDetails().userId;
             try
@@ -123,34 +123,45 @@ namespace Collab_Platform.ApplicationLayer.Service
             var customRole = await _customRole.GetCustomRoleByRoleID(RoleId) ?? throw new KeyNotFoundException("This Role name does not exist with this id");
             await _customRole.RemoveRole(customRole);
         }
-        public async Task UpdateCustomRole(Guid RoleID, UpdateCustomRoleDTO updateCustomRole)   //Left to add Tranction and Remove User form Role Repo
+        public async Task UpdateCustomRole(Guid RoleID, UpdateCustomRoleDTO updateCustomRole)
         {
-            var customRole = await _customRole.GetCustomRoleByRoleID(RoleID) ?? throw new KeyNotFoundException("This role does not exist");
-            var customRoleUser = customRole.CustomRoleUsers.Select(u => u.UserID).ToHashSet();
-            var memberToRemove = customRoleUser;
-            var customRolePermission = customRole.RolePermissions.Select(u => u.PermissionId).ToHashSet();
-            customRole.CustomRoleDesc = updateCustomRole.CustomRoleDesc;
-            customRole.CustomRoleName = updateCustomRole.CustomRoleName;
-            if (updateCustomRole.UserId.Count != 0)
+            try 
             {
-                var toBeUpdateUser = new HashSet<string>(updateCustomRole.UserId);
-                memberToRemove.ExceptWith(toBeUpdateUser);
-                toBeUpdateUser.ExceptWith(customRoleUser);
-                if (toBeUpdateUser.Count != 0)
+                await _unitOfWork.BeginTranctionAsync();
+                var customRole = await _customRole.GetCustomRoleByRoleID(RoleID) ?? throw new KeyNotFoundException("This role does not exist");
+                var customRoleUser = customRole.CustomRoleUsers.Select(u => u.UserID).ToHashSet();
+                var memberToRemove = customRoleUser;
+                var customRolePermission = customRole.RolePermissions.Select(u => u.PermissionId).ToHashSet();
+                customRole.CustomRoleDesc = updateCustomRole.CustomRoleDesc;
+                customRole.CustomRoleName = updateCustomRole.CustomRoleName;
+                if (updateCustomRole.UserId.Count != 0)
                 {
-                    var updateUser = toBeUpdateUser.Select(u => new CustomRoleUser     
+                    var toBeUpdateUser = new HashSet<string>(updateCustomRole.UserId);
+                    memberToRemove.ExceptWith(toBeUpdateUser);
+                    toBeUpdateUser.ExceptWith(customRoleUser);
+                    if (toBeUpdateUser.Count != 0)
                     {
-                        CustomRoleId = customRole.CustomRoleId,
-                        UserID = u
-                    }).ToList();
-                    await _customRole.AddUserToRole(updateUser);
+                        var updateUser = toBeUpdateUser.Select(u => new CustomRoleUser
+                        {
+                            CustomRoleId = customRole.CustomRoleId,
+                            UserID = u
+                        }).ToList();
+                        await _customRole.AddUserToRole(updateUser);
+                    }
+                    if (memberToRemove.Count != 0)
+                    {
+                        var removeUser = customRole.CustomRoleUsers.Where(u => memberToRemove.Contains(u.UserID)).ToList();
+                        await _customRole.RemoveRole(customRole);
+                    }
                 }
-                if(memberToRemove.Count != 0)
-                {
-                    var removeUser = customRole.CustomRoleUsers.Where(u => memberToRemove.Contains(u.UserID)).ToList();
-                }
-
+                await _unitOfWork.CommitTranctionAsync();
             }
+            catch 
+            {
+                await _unitOfWork.RollBackTranctionAsync(); 
+                throw;
+            }
+
 
         }
 

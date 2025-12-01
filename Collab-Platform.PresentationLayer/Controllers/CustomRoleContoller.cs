@@ -47,8 +47,25 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpDelete("{RoleId}")]
-        public async Task<ActionResult> DeleteProjectRole(Guid RoleId) {
-            return Ok();
+        public async Task<ActionResult<APIResponse>> DeleteProjectRole(Guid RoleId) {
+            await _customRoleInterface.DeleteCustomRole(RoleId);
+            return Ok(
+                new APIResponse { 
+                    Success = true,
+                    Messege = "Role Sucesfully Deleted"
+                }    
+            );
+        }
+        [HttpPut("{RoleId}")]
+        public async Task<ActionResult<APIResponse>> UpdateProjectRole(Guid RoleId, [FromBody] UpdateCustomRoleDTO updateCustomRole) {
+
+            await _customRoleInterface.UpdateCustomRole(RoleId, updateCustomRole);
+            return Ok(
+                new APIResponse { 
+                    Success = true,
+                    Messege = "Role Sucessfully Updated"
+                }
+            );
         }
     }
 }
