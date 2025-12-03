@@ -1,10 +1,8 @@
 ﻿using Collab_Platform.ApplicationLayer.DTO.TaskDto;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
-using Collab_Platform.DomainLayer.EnumsAndOther;
 using Collab_Platform.DomainLayer.Models;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using System.Net.WebSockets;
+using static Collab_Platform.PresentationLayer.Middleware.ExecptionClass;
 
 namespace Collab_Platform.ApplicationLayer.Service
 {
@@ -209,7 +207,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 var task = await _taskRepo.GetTaskByTaskId(TaskId) ?? throw new KeyNotFoundException("Task with the given task id not found");
                 if (task.TaskLeaderId != userId || task.Project.CreatorId != userId)
                 {
-                    throw new InvalidOperationException("You must be the creator of this task or creator of the project");
+                    throw new InvalidRoleException("You must be the creator of this task or creator of the project");
                 }
                 task.TaskName = updateTask.TaskName;
                 task.TaskDesc = updateTask.TaskDesc;

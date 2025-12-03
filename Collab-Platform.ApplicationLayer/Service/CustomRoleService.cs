@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO;
+﻿using Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
@@ -165,6 +164,8 @@ namespace Collab_Platform.ApplicationLayer.Service
 
         }
 
-
+        public async Task AddUserToRole(List<string> UserId, Guid CustomRoleID) { 
+            
+        }
     }
 }

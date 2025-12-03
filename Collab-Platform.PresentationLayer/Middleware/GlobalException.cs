@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using System.Net;
 using System.Text.Json;
+using static Collab_Platform.PresentationLayer.Middleware.ExecptionClass;
 
 namespace Collab_Platform.PresentationLayer.Middleware
 {
@@ -34,6 +35,7 @@ namespace Collab_Platform.PresentationLayer.Middleware
                 UnauthorizedAccessException => HttpStatusCode.Unauthorized,
                 KeyNotFoundException => HttpStatusCode.NotFound,
                 InvalidOperationException => HttpStatusCode.Conflict,
+                InvalidRoleException => HttpStatusCode.Forbidden,
                 _ => HttpStatusCode.InternalServerError,
             };
 
