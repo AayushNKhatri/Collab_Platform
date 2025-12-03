@@ -9,6 +9,8 @@ namespace Collab_Platform.ApplicationLayer.Interface.RepoInterface
         Task AddCutomRole(CustomRoleModels roleModel);
         Task RemoveRole(CustomRoleModels roleModels);
         Task AddUserToRole(List<CustomRoleUser> roleUser);
-        Task UserFormRole(List<CustomRoleUser> customRoleUsers);
+        Task RemoveUserFormRole(List<CustomRoleUser> customRoleUsers);
+        Task AddPermissionToRole(List<RolePermissionModel> permission);
+        Task RemovePermissionFormRole(List<RolePermissionModel> permission);
     }
 }

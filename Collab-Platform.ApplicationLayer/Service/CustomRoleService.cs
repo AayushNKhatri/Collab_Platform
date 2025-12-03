@@ -165,7 +165,56 @@ namespace Collab_Platform.ApplicationLayer.Service
         }
 
         public async Task AddUserToRole(List<string> UserId, Guid CustomRoleID) { 
-            
+            var CustomRole = await _customRole.GetCustomRoleByRoleID(CustomRoleID) ?? throw new KeyNotFoundException("Project with given id does not exist");
+            var existingUser = CustomRole.CustomRoleUsers.Select(u => u.UserID).ToHashSet();
+            var ToBeAddUser = UserId.ToHashSet();
+            ToBeAddUser.ExceptWith(existingUser);   
+            var userToAdd = ToBeAddUser.Select(u => new CustomRoleUser
+            {
+               UserID = u,
+               CustomRoleId = CustomRole.CustomRoleId 
+            }).ToList();
+            await _customRole.AddUserToRole(userToAdd);
+        }
+        public async Task RemoveUserFromRole(List<string> UserId, Guid CustomRoleId){
+          var CustomRole = await _customRole.GetCustomRoleByRoleID(CustomRoleId) 
+            ?? throw new KeyNotFoundException("There is no role with that id");
+
+          var existingUser = CustomRole.CustomRoleUsers.Select(u => u.UserID).ToHashSet();
+          var TobeRemove = UserId.ToHashSet();
+          TobeRemove.ExceptWith(existingUser);
+          var userToRemove = TobeRemove.Select(u => new CustomRoleUser
+          {
+            CustomRoleId  = CustomRole.CustomRoleId,
+            UserID = u
+          }).ToList();
+          await _customRole.RemoveUserFormRole(userToRemove);
+        }
+        public async Task RemovePermissionFormRole(List<int> PermissionId, Guid CustomeRoleId)
+        {
+            var customRole = await _customRole.GetCustomRoleByRoleID(CustomeRoleId) ?? throw new KeyNotFoundException("There is no role wtih this id");
+            var existingPermission = customRole.RolePermissions.Select(u => u.PermissionId).ToHashSet();
+            var RemovePermission = PermissionId.ToHashSet();
+            RemovePermission.ExceptWith(existingPermission);
+            var PermissionToRemove = RemovePermission.Select(u => new RolePermissionModel
+            {
+               CustomRoleId = customRole.CustomRoleId,
+               PermissionId  = u 
+            }).ToList();
+            await _customRole.RemovePermissionFormRole(PermissionToRemove);
+        }
+        public async Task AddPermissionToRole(List<int> PermissionId, Guid CustomRoleID)
+        {
+            var customRole = await _customRole.GetCustomRoleByRoleID(CustomRoleID) ?? throw new KeyNotFoundException("There is no role with this id");
+            var existingPermission = customRole.RolePermissions.Select(u => u.PermissionId).ToHashSet();
+            var AddPermission = PermissionId.ToHashSet();
+            AddPermission.ExceptWith(existingPermission);
+            var PermissionToAdd = AddPermission.Select(u => new RolePermissionModel
+            {
+                CustomRoleId = customRole.CustomRoleId,
+                PermissionId = u
+            }).ToList();
+            await _customRole.AddPermissionToRole(PermissionToAdd);
         }
     }
 }

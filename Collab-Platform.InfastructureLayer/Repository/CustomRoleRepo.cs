@@ -1,4 +1,4 @@
-using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
+﻿using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.DomainLayer.Models;
 using Collab_Platform.InfastructureLayer.Database;
 using Microsoft.EntityFrameworkCore;
@@ -50,8 +50,16 @@ namespace Collab_Platform.InfastructureLayer.Repository
         {
             await _db.RoleUsers.AddRangeAsync(customRoleUsers);
         }
-        public async Task UserFormRole(List<CustomRoleUser> customRoleUsers) {
+        public async Task RemoveUserFormRole(List<CustomRoleUser> customRoleUsers) {
             _db.RoleUsers.RemoveRange(customRoleUsers);
+        }
+        public async Task AddPermissionToRole(List<RolePermissionModel> permission)
+        {
+            await _db.RolePermissions.AddRangeAsync(permission);
+        }
+        public async Task RemovePermissionFormRole(List<RolePermissionModel> permission)
+        {
+            _db.RolePermissions.RemoveRange(permission);
         }
     }
 }

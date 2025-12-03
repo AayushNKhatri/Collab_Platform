@@ -14,7 +14,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             customRolInterface = _customRoleInterface;
         }
 
-        [HttpGet("{CustomRoleID}")]
+        [HttpGet("Project/{CustomRoleID}")]
         public async Task<ActionResult<APIResponse<ProjectRoleDetailDTO>>> GetCustomeRoleByID(Guid CustomRoleID) {
             var customRole = await _customRoleInterface.GetAllCutomRoleByRoleID(CustomRoleID);
             return Ok( new APIResponse<ProjectRoleDetailDTO> { 
@@ -66,6 +66,50 @@ namespace Collab_Platform.PresentationLayer.Controllers
                     Messege = "Role Sucessfully Updated"
                 }
             );
+        }
+        [HttpPut("AddUser/{RoleId}")]
+        public async Task<ActionResult<APIResponse>> AddUserToRole(Guid RoleId, List<string> UserId)
+        {
+            await _customRoleInterface.AddUserToRole(UserId, RoleId);
+            return Ok(
+                new APIResponse
+                {
+                    Success = true,
+                    Messege = "Added User to Role"
+                }
+            );
+        }
+        [HttpPut("RemoveUser/{RoleID}")]
+        public async Task<ActionResult<APIResponse>> RemoveUserFormRole(Guid RoleID, List<string> UserId)
+        {
+            await _customRoleInterface.RemoveUserFromRole(UserId, RoleID);
+            return Ok(
+                new APIResponse
+                {
+                    Success = true,
+                    Messege = "User removed from Role"
+                }
+            );
+        }
+        [HttpPut("AddPermision/{RoleID}")]
+        public async Task<ActionResult<APIResponse>> AddPermissionToRole(Guid RoleID, List<int> PermissionId)
+        {
+            await _customRoleInterface.AddPermissionToRole(PermissionId, RoleID);
+            return Ok( new APIResponse
+            {
+                Success = true,
+                Messege = "Permission Added to role"
+            });
+        }
+        [HttpPut("RemovePermission/{RoleId}")]
+        public async Task<ActionResult<APIResponse>> RemovePermissionFormRole(Guid RoleId, List<int> PemissionId)
+        {
+            await _customRoleInterface.RemovePermissionFormRole(PemissionId, RoleId);
+            return Ok( new APIResponse
+            {
+                    Success = true,
+                    Messege = "Permission Removed Sucessfully"
+            });
         }
     }
 }
