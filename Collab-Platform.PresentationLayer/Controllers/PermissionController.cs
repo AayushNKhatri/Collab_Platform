@@ -2,6 +2,7 @@ using Collab_Platform.ApplicationLayer.DTO.PermissionDto;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace Collab_Platform.PresentationLayer.Controllers
 {
@@ -22,6 +23,16 @@ namespace Collab_Platform.PresentationLayer.Controllers
             {
                 Success = true,
                 Messege = "Permission Sucessfully Get",
+                Data = data
+            });
+        }
+        [HttpGet("Controller")]
+        public async Task<IActionResult> GetContollerName() {
+            var asm = Assembly.GetExecutingAssembly();
+            var data = await _permissionService.GetContoller(asm);
+            return Ok( new APIResponse<List<Type>> { 
+                Success = true,
+                Messege = "Contoller name",
                 Data = data
             });
         }

@@ -16,7 +16,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             _taskInterface = taskInterface;
         }
         [HttpPost("Create-Task")]
-        public async Task<ActionResult<APIResponse>> CreateTask([FromBody] CreateTaskDTO createTask) {
+        public async Task<IActionResult> CreateTask([FromBody] CreateTaskDTO createTask) {
             await _taskInterface.CreateTask(createTask);
             return Ok(new APIResponse {
                 Success = true,
@@ -24,7 +24,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpGet("{TaskId}")]
-        public async Task<ActionResult<APIResponse>> GetTaskByTaskId([FromRoute] Guid TaskId) {
+        public async Task<IActionResult> GetTaskByTaskId([FromRoute] Guid TaskId) {
             var result = await _taskInterface.GetTaskById(TaskId);
             return Ok(new APIResponse<TaskDetailDto> {
                 Success = true,
@@ -33,7 +33,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpGet("FormProject/{ProjectId}")]
-        public async Task<ActionResult<APIResponse>> GetTaskByProjectId([FromRoute] Guid ProjectId) {
+        public async Task<IActionResult> GetTaskByProjectId([FromRoute] Guid ProjectId) {
             var result = await _taskInterface.GetTaskByProject(ProjectId);
             return Ok(new APIResponse<List<TaskDetailDto>> {
                 Success = true,
@@ -42,7 +42,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpGet]
-        public async Task<ActionResult<APIResponse>> GetTaskByUserID() {
+        public async Task<IActionResult> GetTaskByUserID() {
             var result = await _taskInterface.GetTaskByUserID();
             return Ok(new APIResponse<List<TaskDetailDto>> {
                 Success = true,
@@ -51,7 +51,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpDelete("{TaskId}")]
-        public async Task<ActionResult<APIResponse>> DeleteTask([FromRoute]Guid TaskId) {
+        public async Task<IActionResult> DeleteTask([FromRoute]Guid TaskId) {
             await _taskInterface.DeleteTask(TaskId);
             return Ok(new APIResponse { 
                 Success = true,
@@ -59,7 +59,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpPut("{TaskId}")]
-        public async Task<ActionResult<APIResponse>> UpdateTask([FromRoute] Guid TaskId, [FromBody] UpdateTaskDto updateTask) {
+        public async Task<IActionResult> UpdateTask([FromRoute] Guid TaskId, [FromBody] UpdateTaskDto updateTask) {
             await _taskInterface.UpdateTask(TaskId, updateTask);
             return Ok(new APIResponse
             {
@@ -69,7 +69,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
         }
 
         [HttpGet("GetCreatedTask")]
-        public async Task<ActionResult<APIResponse>> GetTaskByCreatorID()
+        public async Task<IActionResult> GetTaskByCreatorID()
         {
             var TaskDetail = await _taskInterface.GetTaskByUserID(); 
             return Ok(new APIResponse<List<TaskDetailDto>>(){

@@ -15,7 +15,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
         }
 
         [HttpGet("Project/{CustomRoleID}")]
-        public async Task<ActionResult<APIResponse<ProjectRoleDetailDTO>>> GetCustomeRoleByID(Guid CustomRoleID) {
+        public async Task<IActionResult> GetCustomeRoleByID(Guid CustomRoleID) {
             var customRole = await _customRoleInterface.GetAllCutomRoleByRoleID(CustomRoleID);
             return Ok( new APIResponse<ProjectRoleDetailDTO> { 
                 Success = true,
@@ -25,7 +25,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
         }
 
         [HttpGet("{ProjectId}")]
-        public async Task<ActionResult<List<ProjectRoleDetailDTO>>> GetCustomeRoleByProjectID(Guid ProjectId) 
+        public async Task<IActionResult> GetCustomeRoleByProjectID(Guid ProjectId) 
         {
             var customRole = await _customRoleInterface.GetAllCustomRoleByProject(ProjectId);
             return Ok(
@@ -37,7 +37,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpPost("{ProjectID}")]
-        public async Task<ActionResult<APIResponse>> CreateRole(Guid ProjectID, [FromBody] CretaeCustomRoleDTO createRole) {
+        public async Task<IActionResult> CreateRole(Guid ProjectID, [FromBody] CretaeCustomRoleDTO createRole) {
             await _customRoleInterface.CreateCutomeRole(createRole, ProjectID);
             return Ok(
                 new APIResponse { 
@@ -47,7 +47,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpDelete("{RoleId}")]
-        public async Task<ActionResult<APIResponse>> DeleteProjectRole(Guid RoleId) {
+        public async Task<IActionResult> DeleteProjectRole(Guid RoleId) {
             await _customRoleInterface.DeleteCustomRole(RoleId);
             return Ok(
                 new APIResponse { 
@@ -57,7 +57,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpPut("{RoleId}")]
-        public async Task<ActionResult<APIResponse>> UpdateProjectRole(Guid RoleId, [FromBody] UpdateCustomRoleDTO updateCustomRole) {
+        public async Task<IActionResult> UpdateProjectRole(Guid RoleId, [FromBody] UpdateCustomRoleDTO updateCustomRole) {
 
             await _customRoleInterface.UpdateCustomRole(RoleId, updateCustomRole);
             return Ok(
@@ -68,7 +68,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpPut("AddUser/{RoleId}")]
-        public async Task<ActionResult<APIResponse>> AddUserToRole(Guid RoleId, List<string> UserId)
+        public async Task<IActionResult> AddUserToRole(Guid RoleId, List<string> UserId)
         {
             await _customRoleInterface.AddUserToRole(UserId, RoleId);
             return Ok(
@@ -80,7 +80,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpPut("RemoveUser/{RoleID}")]
-        public async Task<ActionResult<APIResponse>> RemoveUserFormRole(Guid RoleID, List<string> UserId)
+        public async Task<IActionResult> RemoveUserFormRole(Guid RoleID, List<string> UserId)
         {
             await _customRoleInterface.RemoveUserFromRole(UserId, RoleID);
             return Ok(
@@ -92,7 +92,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpPut("AddPermision/{RoleID}")]
-        public async Task<ActionResult<APIResponse>> AddPermissionToRole(Guid RoleID, List<int> PermissionId)
+        public async Task<IActionResult> AddPermissionToRole(Guid RoleID, List<int> PermissionId)
         {
             await _customRoleInterface.AddPermissionToRole(PermissionId, RoleID);
             return Ok( new APIResponse
@@ -102,7 +102,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpPut("RemovePermission/{RoleId}")]
-        public async Task<ActionResult<APIResponse>> RemovePermissionFormRole(Guid RoleId, List<int> PemissionId)
+        public async Task<IActionResult> RemovePermissionFormRole(Guid RoleId, List<int> PemissionId)
         {
             await _customRoleInterface.RemovePermissionFormRole(PemissionId, RoleId);
             return Ok( new APIResponse

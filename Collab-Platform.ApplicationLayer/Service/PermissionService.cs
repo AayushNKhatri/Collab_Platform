@@ -1,6 +1,9 @@
 using Collab_Platform.ApplicationLayer.DTO.PermissionDto;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 
 namespace Collab_Platform.ApplicationLayer.Service
@@ -25,6 +28,11 @@ namespace Collab_Platform.ApplicationLayer.Service
                 Category = p.Category
             }).ToList();
             return dto;
+        }
+        public async Task<List<Type>> GetContoller(Assembly asm) {
+            var apiContoller = asm.GetTypes()
+                .Where(t => typeof(ControllerBase).IsAssignableFrom(t) || typeof(ApiControllerAttribute).IsAssignableFrom(t)).ToList();
+            return apiContoller; 
         }
     }
 }
