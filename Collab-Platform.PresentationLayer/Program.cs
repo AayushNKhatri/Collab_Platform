@@ -15,7 +15,7 @@ using Collab_Platform.PresentationLayer.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
+var logConfig = new LogConfig();
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .Enrich.WithThreadId() 
@@ -27,6 +27,14 @@ Log.Logger = new LoggerConfiguration()
         builder.Configuration["ApplicationInsights:ConnectionString"],
         TelemetryConverter.Traces
     )
+    // .WriteTo.PostgreSQL(    //Consume to much storege in db i am brkoe
+    //     connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+    //     tableName:"logs",
+    //     columnOptions:logConfig.GetColoumData(),
+    //     needAutoCreateTable: true,
+    //     useCopy:false
+    //     
+    //     )
     .MinimumLevel.Information()
     .CreateLogger();
 

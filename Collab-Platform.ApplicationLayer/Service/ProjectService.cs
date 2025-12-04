@@ -55,6 +55,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                     UserProjects = new List<UserProject>()
                 };
                 var result = await _projectRepo.CreateProject(project);
+                await _unitOfWork.SaveChangesAsync();
                 var useProject = new List<UserProject>
                 {
                     new UserProject{

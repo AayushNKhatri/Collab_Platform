@@ -90,6 +90,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                     RoleCreatorId = userID,
                 };
                 await _customRole.AddCutomRole(customRole);
+                await _unitOfWork.SaveChangesAsync();
                 if (createCustomRole.PermissionId.Count > 0)
                 {
                     var role = createCustomRole.PermissionId.Select(u => new RolePermissionModel
@@ -98,6 +99,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                         CustomRoleId = customRole.CustomRoleId,
                     }).ToList();
                     await _permissionRepo.addPermissionToRole(role);
+                    await _unitOfWork.SaveChangesAsync();
                 }
                 if (createCustomRole.UserId.Count > 0)
                 {
@@ -107,6 +109,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                         CustomRoleId = customRole.CustomRoleId
                     }).ToList();
                     await _customRole.AddUserToRole(user);
+                    await _unitOfWork.SaveChangesAsync();
                 }
                 await _unitOfWork.CommitTranctionAsync();
             }
@@ -133,6 +136,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 var customRolePermission = customRole.RolePermissions.Select(u => u.PermissionId).ToHashSet();
                 customRole.CustomRoleDesc = updateCustomRole.CustomRoleDesc;
                 customRole.CustomRoleName = updateCustomRole.CustomRoleName;
+                await _unitOfWork.SaveChangesAsync();
                 if (updateCustomRole.UserId.Count != 0)
                 {
                     var toBeUpdateUser = new HashSet<string>(updateCustomRole.UserId);
@@ -146,11 +150,13 @@ namespace Collab_Platform.ApplicationLayer.Service
                             UserID = u
                         }).ToList();
                         await _customRole.AddUserToRole(updateUser);
+                        await _unitOfWork.SaveChangesAsync();
                     }
                     if (memberToRemove.Count != 0)
                     {
                         var removeUser = customRole.CustomRoleUsers.Where(u => memberToRemove.Contains(u.UserID)).ToList();
                         await _customRole.RemoveRole(customRole);
+                        await _unitOfWork.SaveChangesAsync();
                     }
                 }
                 await _unitOfWork.CommitTranctionAsync();
@@ -175,6 +181,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                CustomRoleId = CustomRole.CustomRoleId 
             }).ToList();
             await _customRole.AddUserToRole(userToAdd);
+            await _unitOfWork.SaveChangesAsync();
         }
         public async Task RemoveUserFromRole(List<string> UserId, Guid CustomRoleId){
           var CustomRole = await _customRole.GetCustomRoleByRoleID(CustomRoleId) 
@@ -189,6 +196,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             UserID = u
           }).ToList();
           await _customRole.RemoveUserFormRole(userToRemove);
+          await _unitOfWork.SaveChangesAsync();
         }
         public async Task RemovePermissionFormRole(List<int> PermissionId, Guid CustomeRoleId)
         {
@@ -202,6 +210,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                PermissionId  = u 
             }).ToList();
             await _customRole.RemovePermissionFormRole(PermissionToRemove);
+            await _unitOfWork.SaveChangesAsync();
         }
         public async Task AddPermissionToRole(List<int> PermissionId, Guid CustomRoleID)
         {
@@ -215,6 +224,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 PermissionId = u
             }).ToList();
             await _customRole.AddPermissionToRole(PermissionToAdd);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }
