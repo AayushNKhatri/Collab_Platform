@@ -12,12 +12,13 @@ namespace Collab_Platform.ApplicationLayer.Service
         public readonly IHelperService _helperService;
         public readonly IProjectInterface _projectService;
         public readonly IUnitOfWork _unitOfWork;
-        public CustomRoleService(ICustomRoleRepo customRole, IPermissionRepo permissionRepo, IHelperService helperService, IProjectInterface prjectService)
+        public CustomRoleService(ICustomRoleRepo customRole, IPermissionRepo permissionRepo, IHelperService helperService, IProjectInterface prjectService, IUnitOfWork unitOfWork)
         {
             _customRole = customRole;
             _permissionRepo = permissionRepo;
             _helperService = helperService;
             _projectService = prjectService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ProjectRoleDetailDTO> GetAllCutomRoleByRoleID(Guid CustomRoleID)
