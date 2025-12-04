@@ -44,7 +44,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                     UpdatedAt = DateTime.UtcNow,
                 };
                 await _taskRepo.CreateTask(task);
-                
+                await _unitOfWork.SaveChangesAsync();
                 var projectMember = await _projectInterface.GetUserProjectDetails(project) ?? throw new KeyNotFoundException("There is no member in project select member first");
                 var projectMemberID = projectMember.Select(m => m.UserId).ToHashSet();
                 var taskMemberFormDTO = createTask.TaskMemberID;
@@ -86,6 +86,7 @@ namespace Collab_Platform.ApplicationLayer.Service
         {
             var taskModel = await _taskRepo.GetTaskByTaskId(TaskId) ?? throw new KeyNotFoundException("Task does not exist for this id");
             await _taskRepo.DeleteTask(taskModel);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<TaskDetailDto> GetTaskById(Guid TaskId)
@@ -182,7 +183,8 @@ namespace Collab_Platform.ApplicationLayer.Service
                     TaskId = TaskId,
                     UserId = userId
                 }).ToList();
-            _taskRepo.addUserToTask(newUserTasks);
+            await _taskRepo.addUserToTask(newUserTasks);
+            await  _unitOfWork.SaveChangesAsync();
         }
         public async Task RemoveUserFormTask(Guid TaskId, List<string> UserId)  //Validation Left
         {
@@ -195,7 +197,8 @@ namespace Collab_Platform.ApplicationLayer.Service
                     TaskId = TaskId,
                     UserId = userid
                 }).ToList();
-            _taskRepo.deleteUserFormTask(userToRemove);
+            await _taskRepo.deleteUserFormTask(userToRemove);
+            await  _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateTask(Guid TaskId, UpdateTaskDto updateTask)
@@ -213,6 +216,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 task.TaskDesc = updateTask.TaskDesc;
                 task.TaskDueDate = updateTask.TaskDueDate;
                 task.TaskStatus = updateTask.TaskStatus;
+                await _unitOfWork.SaveChangesAsync();
                 if (task.TaskLeaderId != updateTask.TaskLeaderId)
                 {
                     task.TaskLeaderId = updateTask.TaskLeaderId;
@@ -224,6 +228,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                         TaskId = TaskId
                     };
                     await _taskRepo.addUserToTask(taskLeader);
+                    await _unitOfWork.SaveChangesAsync();
                 }
                 var existingTaskMember = task.UserTasks
                         .Where(u => u.UserId == task.CreatedById)
@@ -239,12 +244,14 @@ namespace Collab_Platform.ApplicationLayer.Service
                         TaskId = TaskId,
                     }).ToList();
                     await _taskRepo.addUserToTask(addMember);
+                    await _unitOfWork.SaveChangesAsync();
                 }
 
                 if (memberToRemove.Any())
                 {
                     var deleteUser = task.UserTasks.Where(u => memberToRemove.Contains(u.UserId)).ToList();
                     await _taskRepo.deleteUserFormTask(deleteUser);
+                    await _unitOfWork.SaveChangesAsync();
                 }
                 
                 await _unitOfWork.SaveChangesAsync();

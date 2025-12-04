@@ -11,7 +11,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
     {
         private readonly ICustomRolInterface _customRoleInterface;
         public CustomRoleContoller(ICustomRolInterface customRolInterface) {
-            customRolInterface = _customRoleInterface;
+            _customRoleInterface = customRolInterface;
         }
 
         [HttpGet("Project/{CustomRoleID}")]

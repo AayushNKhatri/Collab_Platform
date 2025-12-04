@@ -74,7 +74,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             }).ToList();
             return ProjectRoleDetail;
         }
-        public async Task CreateCutomeRole(CretaeCustomRoleDTO createCustomRole, Guid ProjectID)
+        public async Task CreateCutomeRole(CretaeCustomRoleDTO createCustomRole, Guid ProjectID)  
         {
             var userID = _helperService.GetTokenDetails().userId;
             try
