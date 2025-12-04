@@ -75,7 +75,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             }).ToList();
             return ProjectRoleDetail;
         }
-        public async Task CreateCutomeRole(CretaeCustomRoleDTO createCustomRole, Guid ProjectID)  
+        public async Task CreateCutomeRole(CretaeCustomRoleDTO createCustomRole, Guid ProjectID)  //Add Validtion where user and permission key are valdi
         {
             var userID = _helperService.GetTokenDetails().userId;
             try

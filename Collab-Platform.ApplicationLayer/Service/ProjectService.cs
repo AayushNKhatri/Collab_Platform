@@ -38,7 +38,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<ProjectModel> CreateProject(CreateProjectDto createProjectDto)
+        public async Task<ProjectModel> CreateProject(CreateProjectDto createProjectDto) //Validation for user sent in req
         {
             try {
                 var userID = _helperService.GetTokenDetails().userId ?? throw new KeyNotFoundException("UserID not found");
