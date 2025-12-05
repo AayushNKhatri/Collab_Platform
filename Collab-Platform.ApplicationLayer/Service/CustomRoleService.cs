@@ -50,7 +50,7 @@ namespace Collab_Platform.ApplicationLayer.Service
         }
         public async Task<List<ProjectRoleDetailDTO>> GetAllCustomRoleByProject(Guid ProjectID)
         {
-            var customRole = await _customRole.GetAllCustomRoleByProject(ProjectID);
+            var customRole = await _customRole.GetAllCustomRoleByProject(ProjectID);      //Error Due to user being empty
             var ProjectRoleDetail = customRole.Select(u => new ProjectRoleDetailDTO
             {
                 CustomRoleId = u.CustomRoleId,
@@ -63,7 +63,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 permission = u.RolePermissions.Select(u =>
                     new PermissionDTO
                     {
-                        PermissionId = u.Permission.PermissionId,
+                        PermissionId = u.PermissionId,
                         PermissionKey = u.Permission.Key,
                     }
                 ).ToList(),
@@ -92,7 +92,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 };
                 await _customRole.AddCutomRole(customRole);
                 await _unitOfWork.SaveChangesAsync();
-                if (createCustomRole.PermissionId.Count > 0)
+                if (createCustomRole.PermissionId != null)
                 {
                     var role = createCustomRole.PermissionId.Select(u => new RolePermissionModel
                     {
@@ -102,7 +102,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                     await _permissionRepo.addPermissionToRole(role);
                     await _unitOfWork.SaveChangesAsync();
                 }
-                if (createCustomRole.UserId.Count > 0)
+                if (createCustomRole.UserId != null)
                 {
                     var user = createCustomRole.UserId.Select(u => new CustomRoleUser
                     {

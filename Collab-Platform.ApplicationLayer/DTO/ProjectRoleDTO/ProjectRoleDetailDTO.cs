@@ -9,8 +9,8 @@ namespace Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO
         public string RoleCreatorName { get; set;}
         public Guid ProjectID { get; set;}
         public string ProjectName { get; set;}
-        public List<PermissionDTO> permission { get; set;}
-        public List<RoleUserDTO> RoleUser { get; set;}
+        public List<PermissionDTO>? permission { get; set;}
+        public List<RoleUserDTO>? RoleUser { get; set;}
 
     }
     public class PermissionDTO

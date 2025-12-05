@@ -1,12 +1,6 @@
 ﻿using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Collab_Platform.InfastructureLayer.Database
 {
