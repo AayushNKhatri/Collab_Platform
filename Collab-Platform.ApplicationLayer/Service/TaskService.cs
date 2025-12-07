@@ -21,12 +21,12 @@ namespace Collab_Platform.ApplicationLayer.Service
             _projectInterface = projectInterface;
             _projectRepo = projectRepo;
         }
-        public async Task CreateTask(CreateTaskDTO createTask)
+        public async Task CreateTask(CreateTaskDTO createTask, Guid ProjectId)
         {
             try
             {
                 if (createTask == null) throw new ArgumentNullException("Fill the create Task Proprly");
-                var project = await _projectRepo.GetProjectByID(createTask.ProjectId);
+                var project = await _projectRepo.GetProjectByID(ProjectId);
                 var TaskCreatorId = _helperService.GetTokenDetails().userId ?? throw new KeyNotFoundException("User id not found");
                 if(project.CreatorId != TaskCreatorId) throw new InvalidOperationException("Task Creator id not found");
                 await _unitOfWork.BeginTranctionAsync();
@@ -38,7 +38,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                     TaskDueDate = createTask.TaskDueDate,
                     TaskStatus = createTask.TaskStatus,
                     CreatedById = TaskCreatorId,
-                    ProjectId = createTask.ProjectId,
+                    ProjectId = ProjectId,
                     TaskLeaderId = createTask.TaskLeaderId,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,

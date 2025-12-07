@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Collab_Platform.PresentationLayer.CustomAttribute;
 using Serilog;
 using Collab_Platform.PresentationLayer.Middleware;
 
@@ -111,7 +112,7 @@ builder.Services.AddAuthentication(options =>
             ValidateIssuerSigningKey = true
         };
     });
-
+//builder.Services.AddScoped<ProjectAcessExtention>();
 
 var app = builder.Build();
 app.UseMiddleware<LoggingMiddleware>();

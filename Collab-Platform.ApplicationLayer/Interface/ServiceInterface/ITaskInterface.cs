@@ -4,7 +4,7 @@ namespace Collab_Platform.ApplicationLayer.Interface.ServiceInterface
 {
     public interface ITaskInterface
     {
-        Task CreateTask(CreateTaskDTO createTask);
+        Task CreateTask(CreateTaskDTO createTask, Guid ProjectId);
         Task<TaskDetailDto> GetTaskById(Guid TaskId);
         Task DeleteTask(Guid TaskId);
         Task<List<TaskDetailDto>> GetTaskByProject(Guid ProjectId);

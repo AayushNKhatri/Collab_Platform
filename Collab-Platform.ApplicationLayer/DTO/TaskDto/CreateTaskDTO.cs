@@ -4,7 +4,6 @@ namespace Collab_Platform.ApplicationLayer.DTO.TaskDto
 {
     public class CreateTaskDTO
     {
-        public Guid ProjectId { get; set; }
         public string TaskName { get; set; }
         public string? TaskDesc { get; set; }
         public DateTime? TaskDueDate { get; set; }

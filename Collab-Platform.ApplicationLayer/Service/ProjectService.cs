@@ -28,7 +28,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             var users = await _userRepo.GetMultipeUserById(userIdToBeAdd);
             if (users == null || !users.Any())
                 throw new KeyNotFoundException("No users found for given IDs");
-            if (project.UserProjects.Any(x => x.UserId == userId)) throw new InvalidOperationException("This user is already in the project");
+            if (project.UserProjects.Any(x => UserId.Contains(x.UserId))) throw new InvalidOperationException("This user is already in the project");
             var userProject = users.Select(u => new UserProject
             {
                 ProjectId = projectId,

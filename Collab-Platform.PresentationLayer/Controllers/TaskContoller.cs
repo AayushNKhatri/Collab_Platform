@@ -1,6 +1,7 @@
 ﻿using Collab_Platform.ApplicationLayer.DTO.TaskDto;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
+using Collab_Platform.PresentationLayer.CustomAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,9 +16,10 @@ namespace Collab_Platform.PresentationLayer.Controllers
         public TaskContoller(ITaskInterface taskInterface) {
             _taskInterface = taskInterface;
         }
-        [HttpPost("Create-Task")]
-        public async Task<IActionResult> CreateTask([FromBody] CreateTaskDTO createTask) {
-            await _taskInterface.CreateTask(createTask);
+        [HttpPost("Create-Task/{ProjectId}")]
+        [PermissionValidation("task_create")]
+        public async Task<IActionResult> CreateTask([FromBody] CreateTaskDTO createTask, Guid ProjectId) {
+            await _taskInterface.CreateTask(createTask, ProjectId);
             return Ok(new APIResponse {
                 Success = true,
                 Messege = "Sucessfully created the Task"
