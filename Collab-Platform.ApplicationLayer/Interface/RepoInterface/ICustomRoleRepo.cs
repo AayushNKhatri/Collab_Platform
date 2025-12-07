@@ -12,5 +12,6 @@ namespace Collab_Platform.ApplicationLayer.Interface.RepoInterface
         Task RemoveUserFormRole(List<CustomRoleUser> customRoleUsers);
         Task AddPermissionToRole(List<RolePermissionModel> permission);
         Task RemovePermissionFormRole(List<RolePermissionModel> permission);
+        Task<List<CustomRoleModels>> GetRoleofUserInPorjetc(Guid projectId, string UserID);
     }
 }

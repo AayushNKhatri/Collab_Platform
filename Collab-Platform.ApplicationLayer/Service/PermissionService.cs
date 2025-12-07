@@ -29,6 +29,9 @@ namespace Collab_Platform.ApplicationLayer.Service
             }).ToList();
             return dto;
         }
+        public async Task<List<ViewPermissionDTO>> GetPermissionByListID() { 
+            var result = await 
+        }
         public async Task<List<Type>> GetContoller(Assembly asm) {
             var apiContoller = asm.GetTypes()
                 .Where(t => typeof(ControllerBase).IsAssignableFrom(t) || typeof(ApiControllerAttribute).IsAssignableFrom(t)).ToList();

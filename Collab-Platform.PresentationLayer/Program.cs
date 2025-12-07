@@ -35,7 +35,7 @@ Log.Logger = new LoggerConfiguration()
     //     useCopy:false
     //     
     //     )
-    .MinimumLevel.Information()
+    .MinimumLevel.Debug()
     .CreateLogger();
 
 // Add services to the container.

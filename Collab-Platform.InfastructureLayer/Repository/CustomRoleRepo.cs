@@ -24,11 +24,24 @@ namespace Collab_Platform.InfastructureLayer.Repository
                 .ThenInclude(u => u.Permission)
                 .ToListAsync();
         }
+        public async Task<List<CustomRoleModels>> GetRoleofUserInPorjetc(Guid projectId, string UserID) 
+        {
+            return await _db.CustomRoleModels
+                .Where(u => u.ProjectId == projectId && 
+                    u.CustomRoleUsers.Any(c => c.UserID == UserID))
+                .Include(u => u.Project)
+                .Include(u => u.RoleCreator)
+                .Include(u => u.CustomRoleUsers)
+                .Include(u => u.Users)
+                .Include(u => u.RolePermissions)
+                .ThenInclude(u => u.Permission)
+                .ToListAsync();
+        }
         public async Task<CustomRoleModels?> GetCustomRoleByRoleID(Guid CustomRoleID)
         {
             return await _db.CustomRoleModels
-                .Include(u => u.Project)
-                .Include(u => u.RoleCreator)
+              .Include(u => u.Project)
+              .Include(u => u.RoleCreator)
               .Include(u => u.CustomRoleUsers)
               .ThenInclude(u => u.user)
               .Include(u => u.RolePermissions)
@@ -38,8 +51,8 @@ namespace Collab_Platform.InfastructureLayer.Repository
         public async Task<List<CustomRoleModels>> GetCustomRoleByMultiID(List<Guid> CustomRoleID)
         {
             return await _db.CustomRoleModels.Include(u => u.CustomRoleUsers)
-                                .Include(u => u.Project)
-                .Include(u => u.RoleCreator)
+              .Include(u => u.Project)
+              .Include(u => u.RoleCreator)
               .Include(u => u.CustomRoleUsers)
               .ThenInclude(u => u.user)
               .Include(u => u.RolePermissions)

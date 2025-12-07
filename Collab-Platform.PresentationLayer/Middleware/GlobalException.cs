@@ -19,6 +19,7 @@ namespace Collab_Platform.PresentationLayer.Middleware
             }
             catch (Exception e) {
                 Log.Error(e,
+
                     "Unhandled exception occurred. Path: {Path}, Method: {Method}, TraceId: {TraceId}",
                     context.Request.Path,
                     context.Request.Method,

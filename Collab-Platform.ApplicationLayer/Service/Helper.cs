@@ -1,5 +1,6 @@
 ﻿using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using System.Security.Claims;
 
 namespace Collab_Platform.ApplicationLayer.Service
@@ -21,6 +22,10 @@ namespace Collab_Platform.ApplicationLayer.Service
             catch (Exception e) {
                 throw new Exception($"Errror {e}");
             }
+        }
+        public Guid GetProjectIDFormRequest() {
+            var projectId = (_httpContext?.HttpContext?.GetRouteValue("ProjectId")) ?? throw new ArgumentException("Project Id is not there in route");
+            return (Guid)projectId;
         }
     }
 }

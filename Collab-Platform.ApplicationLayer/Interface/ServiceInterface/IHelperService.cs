@@ -3,5 +3,6 @@
     public interface IHelperService
     {
         (string userId, string role) GetTokenDetails();
+        Guid GetProjectIDFormRequest();
     }
 }

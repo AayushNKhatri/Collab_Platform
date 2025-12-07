@@ -20,5 +20,9 @@ namespace Collab_Platform.InfastructureLayer.Repository
         {
             await _db.RolePermissions.AddRangeAsync(role);
         }
+        public async Task<List<Permission>> GetPermissionByListId(List<int> permissionId) 
+        {
+            return await _db.Permissions.Where(u => permissionId.Contains(u.PermissionId)).ToListAsync();
+        }
     }
 }
