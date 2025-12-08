@@ -1,6 +1,5 @@
 ﻿using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using static Collab_Platform.PresentationLayer.Middleware.ExecptionClass;
 
