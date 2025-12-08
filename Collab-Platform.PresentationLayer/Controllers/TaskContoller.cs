@@ -17,7 +17,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             _taskInterface = taskInterface;
         }
         [HttpPost("Create-Task/{ProjectId}")]
-        [FiltreClass("task_create")]
+        [PermissionValidation("task_create")]
         public async Task<IActionResult> CreateTask([FromBody] CreateTaskDTO createTask, Guid ProjectId) {
             await _taskInterface.CreateTask(createTask, ProjectId);
             return Ok(new APIResponse {
