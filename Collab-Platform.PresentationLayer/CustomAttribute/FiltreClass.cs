@@ -6,6 +6,6 @@ public class PermissionValidation : TypeFilterAttribute
 {
     public PermissionValidation(string accessType) : base(typeof(ProjectAcessExtention))
     {
-        Arguments =new object[]{accessType};
+        Arguments = [accessType];
     }
 }

@@ -16,7 +16,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             _permissionService = permissionService;
         }
         [HttpGet]
-        public async Task<ActionResult<APIResponse<List<ViewPermissionDTO>>>> GetPermission()
+        public async Task<IActionResult> GetPermission()
         {
             var data = await _permissionService.GetAllPermission();
             return Ok( new APIResponse<List<ViewPermissionDTO>>

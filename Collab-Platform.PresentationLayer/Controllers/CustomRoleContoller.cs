@@ -1,7 +1,6 @@
 ﻿using Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
-using Collab_Platform.PresentationLayer.CustomAttribute;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Collab_Platform.PresentationLayer.Controllers
@@ -15,7 +14,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             _customRoleInterface = customRolInterface;
         }
 
-        [HttpGet("Project/{CustomRoleID}")]
+        [HttpGet("Project/{CustomRoleId}")]
         public async Task<IActionResult> GetCustomeRoleByID(Guid CustomRoleID) {
             var customRole = await _customRoleInterface.GetAllCutomRoleByRoleID(CustomRoleID);
             return Ok( new APIResponse<ProjectRoleDetailDTO> { 
@@ -37,9 +36,9 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 }
             );
         }
-        [HttpPost("{ProjectID}")]
-        public async Task<IActionResult> CreateRole(Guid ProjectID, [FromBody] CretaeCustomRoleDTO createRole) {
-            await _customRoleInterface.CreateCutomeRole(createRole, ProjectID);
+        [HttpPost("{ProjectId}")]
+        public async Task<IActionResult> CreateRole(Guid ProjectId, [FromBody] CretaeCustomRoleDTO createRole) {
+            await _customRoleInterface.CreateCutomeRole(createRole, ProjectId);
             return Ok(
                 new APIResponse { 
                     Success = true,
@@ -80,10 +79,10 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 }
             );
         }
-        [HttpPut("RemoveUser/{RoleID}")]
-        public async Task<IActionResult> RemoveUserFormRole(Guid RoleID, List<string> UserId)
+        [HttpPut("RemoveUser/{RoleId}")]
+        public async Task<IActionResult> RemoveUserFormRole(Guid RoleId, List<string> UserId)
         {
-            await _customRoleInterface.RemoveUserFromRole(UserId, RoleID);
+            await _customRoleInterface.RemoveUserFromRole(UserId, RoleId);
             return Ok(
                 new APIResponse
                 {
@@ -92,10 +91,10 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 }
             );
         }
-        [HttpPut("AddPermision/{RoleID}")]
-        public async Task<IActionResult> AddPermissionToRole(Guid RoleID, List<int> PermissionId)
+        [HttpPut("AddPermision/{RoleId}")]
+        public async Task<IActionResult> AddPermissionToRole(Guid RoleId, List<int> PermissionId)
         {
-            await _customRoleInterface.AddPermissionToRole(PermissionId, RoleID);
+            await _customRoleInterface.AddPermissionToRole(PermissionId, RoleId);
             return Ok( new APIResponse
             {
                 Success = true,
