@@ -1,8 +1,9 @@
 using Collab_Platform.ApplicationLayer.DTO.PermissionDto;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
 using System.Reflection;
 
 
@@ -11,9 +12,11 @@ namespace Collab_Platform.ApplicationLayer.Service
     public class PermissionService : IPermissionService
     {
         private readonly IPermissionRepo _permissionRepo;
-        public PermissionService(IPermissionRepo permissionRepo)
+        private readonly EndpointDataSource _endPointDataSource;
+        public PermissionService(IPermissionRepo permissionRepo, EndpointDataSource endpointDataSource)
         {
             _permissionRepo = permissionRepo;
+            _endPointDataSource = endpointDataSource;
         }
 
         public async Task<List<ViewPermissionDTO>> GetAllPermission()
@@ -32,10 +35,15 @@ namespace Collab_Platform.ApplicationLayer.Service
         // public async Task<List<ViewPermissionDTO>> GetPermissionByListID() { 
         //     var result = await 
         // }
-        public async Task<List<Type>> GetContoller(Assembly asm) {
-            var apiContoller = asm.GetTypes()
-                .Where(t => typeof(ControllerBase).IsAssignableFrom(t) || typeof(ApiControllerAttribute).IsAssignableFrom(t)).ToList();
-            return apiContoller; 
+        public async Task<List<EndpointDTO>> GetContoller() {
+            var apiContoller = _endPointDataSource.Endpoints.OfType<RouteEndpoint>().Select(u => new EndpointDTO
+            {
+                RoutePattern = u.RoutePattern.RawText,
+                HttpMethod = u.Metadata.OfType<HttpMethodMetadata>().FirstOrDefault()?.HttpMethods,
+                Controller = u.Metadata.OfType<ControllerActionDescriptor>().FirstOrDefault()?.ControllerName,
+                Action = u.Metadata.OfType<ControllerActionDescriptor>().FirstOrDefault()?.ActionName,
+            }).ToList();
+            return apiContoller;
         }
     }
 }

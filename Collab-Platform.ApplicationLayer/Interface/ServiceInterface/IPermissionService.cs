@@ -6,6 +6,6 @@ namespace Collab_Platform.ApplicationLayer.Interface.ServiceInterface
     public interface IPermissionService
     {
         Task<List<ViewPermissionDTO>> GetAllPermission();
-        Task<List<Type>> GetContoller(Assembly asm);
+        Task <List<EndpointDTO>> GetContoller();
     }
 }

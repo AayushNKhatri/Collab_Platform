@@ -28,9 +28,8 @@ namespace Collab_Platform.PresentationLayer.Controllers
         }
         [HttpGet("Controller")]
         public async Task<IActionResult> GetContollerName() {
-            var asm = Assembly.GetExecutingAssembly();
-            var data = await _permissionService.GetContoller(asm);
-            return Ok( new APIResponse<List<Type>> { 
+            var data = await _permissionService.GetContoller();
+            return Ok( new APIResponse<List<EndpointDTO>> { 
                 Success = true,
                 Messege = "Contoller name",
                 Data = data
