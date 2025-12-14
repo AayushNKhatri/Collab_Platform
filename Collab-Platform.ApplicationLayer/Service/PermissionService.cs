@@ -1,10 +1,8 @@
 using Collab_Platform.ApplicationLayer.DTO.PermissionDto;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
-using System.Reflection;
 
 
 namespace Collab_Platform.ApplicationLayer.Service
@@ -32,9 +30,6 @@ namespace Collab_Platform.ApplicationLayer.Service
             }).ToList();
             return dto;
         }
-        // public async Task<List<ViewPermissionDTO>> GetPermissionByListID() { 
-        //     var result = await 
-        // }
         public async Task<List<EndpointDTO>> GetContoller() {
             var apiContoller = _endPointDataSource.Endpoints.OfType<RouteEndpoint>().Select(u => new EndpointDTO
             {
