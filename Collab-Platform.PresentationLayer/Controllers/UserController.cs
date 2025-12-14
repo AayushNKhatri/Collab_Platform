@@ -40,7 +40,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
         }
         [HttpDelete("DeleteUser")]
         [Authorize]
-        public async Task<ActionResult<APIResponse>> DeleteUser()
+        public async Task<IActionResult> DeleteUser()
         {
             string userId = _helperService.GetTokenDetails().userId;
             await _userInterface.DeleteUserById(userId);
