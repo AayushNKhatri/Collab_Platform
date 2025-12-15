@@ -22,7 +22,7 @@ namespace Collab_Platform.DomainLayer.Models
         [Required]
         public string CreatedById { get; set; }
         public UserModel CreatedBy { get; set; }
-
+        
         public ICollection<UserTask> UserTasks { get; set; }
         public ICollection<SubtaskModel> Subtasks { get; set; }
 

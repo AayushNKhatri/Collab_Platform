@@ -12,8 +12,10 @@ namespace Collab_Platform.DomainLayer.Models
         public string CreatorId { get; set; }
         public UserModel Creator { get; set; }
         public string ChannelLeaderId { get; set; }
+        public Guid TaskId { get; set; }
+        public TaskModel Task { get; set; }
         public UserModel ChannelLeader { get; set; }
-        public ICollection<UserChannel> UserChannels { get; set; }
+        public ICollection<UserChannel> UserChannels { get; set; } = new List<UserChannel>();
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
