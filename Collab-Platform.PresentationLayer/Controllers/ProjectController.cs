@@ -1,6 +1,7 @@
 ﻿using Collab_Platform.ApplicationLayer.DTO.ProjectDto;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
+using Collab_Platform.PresentationLayer.CustomAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProjectController : ControllerBase
     {
         private readonly IProjectInterface _projectService;
@@ -16,7 +18,6 @@ namespace Collab_Platform.PresentationLayer.Controllers
         }
 
         [HttpPost("Create-Project")]
-        [Authorize]
         public async Task<IActionResult> CreateProjectAsync([FromBody] CreateProjectDto createProject) {
                 await _projectService.CreateProject(createProject);
                 return Ok(new APIResponse { 
@@ -26,7 +27,6 @@ namespace Collab_Platform.PresentationLayer.Controllers
             
         }
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetProjectByUserID() {
             var result = await _projectService.GetProjectByUserId();
             return Ok(new APIResponse<List<ProjectDetailDto>> { 
@@ -36,7 +36,6 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpGet("{ProjectId}")]
-        [Authorize]
         public async Task<IActionResult> GetProjectByProjectId([FromRoute] Guid ProjectId) {
             var result = await _projectService.GetProjectById(ProjectId);
             return Ok(new APIResponse<ProjectDetailDto> { 
@@ -46,7 +45,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpPut("AddUser/{ProjectId}")]
-        [Authorize]
+        [PermissionValidation("project_edit")]
         public async Task<IActionResult> AddUserToProject(List<string> UserId, Guid ProjectId) {
             await _projectService.AddUserToProject(ProjectId, UserId) ;
             return Ok(new APIResponse { 
@@ -55,14 +54,15 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
 
+        [PermissionValidation("project_edit")]
         [HttpPut("RemoveUser/{ProjectId}")]
-        [Authorize]
         public async Task<IActionResult> UpdateUserProject(List<string> UserID, Guid ProjectId)
         {
             await _projectService.RemoveUserFormProject(ProjectId, UserID);
             return Ok(new APIResponse { Success = true, Messege = "User sucessfully removed form project" });
         }
         [HttpPut("{ProjectId}")]
+        [PermissionValidation("project_edit")]
         public async Task<IActionResult> UpdateProject([FromBody] UpdateProjectDto updateProject, [FromRoute]Guid ProjectId)
         { 
             var result = await _projectService.UpdateProject(ProjectId, updateProject) ;
