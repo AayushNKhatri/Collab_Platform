@@ -72,6 +72,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpPut("TaskId")]
+        [PermissionValidation("edit_user_from_task")]
         public async Task<IActionResult> EditUserFormTask([FromRoute] Guid TaskId ,List<string> UserId)
         {
             await _taskInterface.EditUserFormTask(TaskId, UserId);
