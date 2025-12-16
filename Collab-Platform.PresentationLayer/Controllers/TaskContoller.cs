@@ -53,6 +53,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpDelete("{TaskId}")]
+        [PermissionValidation("task_delete")]
         public async Task<IActionResult> DeleteTask([FromRoute]Guid TaskId) {
             await _taskInterface.DeleteTask(TaskId);
             return Ok(new APIResponse { 
@@ -61,6 +62,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpPut("{TaskId}")]
+        [PermissionValidation("task_edit")]
         public async Task<IActionResult> UpdateTask([FromRoute] Guid TaskId, [FromBody] UpdateTaskDto updateTask) {
             await _taskInterface.UpdateTask(TaskId, updateTask);
             return Ok(new APIResponse
@@ -69,7 +71,16 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 Messege = "Sucessfully updated the Task"
             });
         }
-
+        [HttpPut("TaskId")]
+        public async Task<IActionResult> EditUserFormTask([FromRoute] Guid TaskId ,List<string> UserId)
+        {
+            await _taskInterface.EditUserFormTask(TaskId, UserId);
+            return Ok(new APIResponse
+            {
+                Success = true,
+                Messege = "Sucessfully edited user for the task"
+            });
+        }
         [HttpGet("GetCreatedTask")]
         public async Task<IActionResult> GetTaskByCreatorID()
         {

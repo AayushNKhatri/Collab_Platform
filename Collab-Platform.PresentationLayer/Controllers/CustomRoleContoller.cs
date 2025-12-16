@@ -1,6 +1,7 @@
 ﻿using Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
+using Collab_Platform.PresentationLayer.CustomAttribute;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Collab_Platform.PresentationLayer.Controllers
@@ -37,6 +38,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpPost("{ProjectId}")]
+        [PermissionValidation("add_role")]
         public async Task<IActionResult> CreateRole(Guid ProjectId, [FromBody] CretaeCustomRoleDTO createRole) {
             await _customRoleInterface.CreateCutomeRole(createRole, ProjectId);
             return Ok(
@@ -47,6 +49,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpDelete("{RoleId}")]
+        [PermissionValidation("remove_role")]
         public async Task<IActionResult> DeleteProjectRole(Guid RoleId) {
             await _customRoleInterface.DeleteCustomRole(RoleId);
             return Ok(
@@ -57,6 +60,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpPut("{RoleId}")]
+        [PermissionValidation("update_role")]
         public async Task<IActionResult> UpdateProjectRole(Guid RoleId, [FromBody] UpdateCustomRoleDTO updateCustomRole) {
 
             await _customRoleInterface.UpdateCustomRole(RoleId, updateCustomRole);
@@ -68,6 +72,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpPut("AddUser/{RoleId}")]
+        [PermissionValidation("edit_user_form_role")]
         public async Task<IActionResult> AddUserToRole(Guid RoleId, List<string> UserId)
         {
             await _customRoleInterface.AddUserToRole(UserId, RoleId);
@@ -80,6 +85,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpPut("RemoveUser/{RoleId}")]
+        [PermissionValidation("edit_user_form_role")]
         public async Task<IActionResult> RemoveUserFormRole(Guid RoleId, List<string> UserId)
         {
             await _customRoleInterface.RemoveUserFromRole(UserId, RoleId);
@@ -92,6 +98,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             );
         }
         [HttpPut("AddPermision/{RoleId}")]
+        [PermissionValidation("update_role")]
         public async Task<IActionResult> AddPermissionToRole(Guid RoleId, List<int> PermissionId)
         {
             await _customRoleInterface.AddPermissionToRole(PermissionId, RoleId);
@@ -102,6 +109,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
             });
         }
         [HttpPut("RemovePermission/{RoleId}")]
+        [PermissionValidation("update_role")]
         public async Task<IActionResult> RemovePermissionFormRole(Guid RoleId, List<int> PemissionId)
         {
             await _customRoleInterface.RemovePermissionFormRole(PemissionId, RoleId);

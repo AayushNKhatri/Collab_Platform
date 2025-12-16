@@ -10,5 +10,10 @@ namespace Collab_Platform.ApplicationLayer.Interface.ServiceInterface
         Task<List<TaskDetailDto>> GetTaskByProject(Guid ProjectId);
         Task<List<TaskDetailDto>> GetTaskByUserID();
         Task UpdateTask(Guid TaskId, UpdateTaskDto updateTask);
+        Task<List<TaskDetailDto>> GetTasksByCreatorId();
+        Task AddUserToTask(Guid TaskId, List<string> UserId);
+        Task RemoveUserFormTask(Guid TaskId, List<string> UserId);
+        Task EditUserFormTask(Guid TaskId, List<string> UserId);
+
     }
 }
