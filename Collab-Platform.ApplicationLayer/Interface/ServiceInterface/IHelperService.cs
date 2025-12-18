@@ -4,5 +4,6 @@
     {
         (string userId, string role) GetTokenDetails();
         Guid GetProjectIDFormRequest();
+        Guid GetTaskIdFormRequest();
     }
 }

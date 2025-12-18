@@ -27,5 +27,10 @@ namespace Collab_Platform.ApplicationLayer.Service
             var projectId = (_httpContext?.HttpContext?.GetRouteValue("ProjectId")) ?? throw new ArgumentException("Project Id is not there in route");
             return Guid.Parse(projectId.ToString());
         }
+        public Guid GetTaskIdFormRequest()
+        {
+            var taskId = (_httpContext?.HttpContext?.GetRouteValue("TaskId")) ?? throw new ArgumentException("There is no Task id in route");
+            return Guid.Parse(taskId.ToString());
+        }
     }
 }
