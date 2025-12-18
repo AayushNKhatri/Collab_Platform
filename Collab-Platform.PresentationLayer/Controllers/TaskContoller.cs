@@ -71,7 +71,7 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 Messege = "Sucessfully updated the Task"
             });
         }
-        [HttpPut("{TaskId}")]
+        [HttpPut("EditUser/{TaskId}")]
         [PermissionValidation("edit_user_from_task")]
         public async Task<IActionResult> EditUserFormTask([FromRoute] Guid TaskId ,List<string> UserId)
         {
