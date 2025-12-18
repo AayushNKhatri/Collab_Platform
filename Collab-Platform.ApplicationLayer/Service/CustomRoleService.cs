@@ -50,7 +50,7 @@ namespace Collab_Platform.ApplicationLayer.Service
         }
         public async Task<List<ProjectRoleDetailDTO>> GetAllCustomRoleByProject(Guid ProjectID)
         {
-            var customRole = await _customRole.GetAllCustomRoleByProject(ProjectID);      //Error Due to user being empty
+            var customRole = await _customRole.GetAllCustomRoleByProject(ProjectID) ?? throw new KeyNotFoundException("There is no project which has such id");      //Error Due to user being empty
             var ProjectRoleDetail = customRole.Select(u => new ProjectRoleDetailDTO
             {
                 CustomRoleId = u.CustomRoleId,
