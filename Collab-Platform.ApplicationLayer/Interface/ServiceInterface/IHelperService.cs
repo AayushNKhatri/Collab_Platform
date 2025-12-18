@@ -3,7 +3,6 @@
     public interface IHelperService
     {
         (string userId, string role) GetTokenDetails();
-        Guid GetProjectIDFormRequest();
-        Guid GetTaskIdFormRequest();
+        public (Guid? ProjectId, Guid? TaskId) GetRouteData();
     }
 }

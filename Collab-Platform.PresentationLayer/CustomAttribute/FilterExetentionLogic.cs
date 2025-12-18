@@ -32,22 +32,30 @@ namespace Collab_Platform.PresentationLayer.CustomAttribute
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var currentUser = _helperService.GetTokenDetails().userId;
-            var projectId = _helperService.GetProjectIDFormRequest();
-            var taskId = _helperService.GetTaskIdFormRequest();
-            var task = await _taskRepo.GetTaskByTaskId(taskId);
-            var project = await _projectRepo.GetProjectByID(projectId);
-            if (project.CreatorId == currentUser)
+            var routeData = _helperService.GetRouteData();
+            if(routeData.ProjectId is Guid projectId)
             {
-                await next();
-            }
-            if (taskId == Guid.Empty)
-            {
-                if (task.CreatedById == currentUser)
+                var project = await _projectRepo.GetProjectByID(projectId);
+                if(project.CreatorId == currentUser)
                 {
                     await next();
+                    return;
                 }
             }
-            var projectRole = await _customRoleRepo.GetRoleofUserInPorjetc(projectId, currentUser) ?? throw new InvalidRoleException("This User had not been Asingned Role");
+            if(routeData.TaskId is Guid taskId)
+            {
+                var task = await _taskRepo.GetTaskByTaskId(taskId);
+                if(task.CreatedById == currentUser)
+                {
+                    await next();
+                    return;
+                }
+            }
+            if(routeData.ProjectId is not Guid ProjectId)
+            {
+                throw new InvalidOperationException("There is no project id for this HTTP context");
+            }
+            var projectRole = await _customRoleRepo.GetRoleofUserInPorjetc(ProjectId, currentUser) ?? throw new InvalidRoleException("This User had not been Asingned Role");
             var permission = projectRole.SelectMany(u => u.RolePermissions).Select(u => u.Permission).ToList();
             if (!permission.Any(u => u.Key == _accessType))
             {

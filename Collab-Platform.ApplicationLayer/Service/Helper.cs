@@ -23,14 +23,22 @@ namespace Collab_Platform.ApplicationLayer.Service
                 throw new Exception($"Errror {e}");
             }
         }
-        public Guid GetProjectIDFormRequest() {
-            var projectId = (_httpContext?.HttpContext?.GetRouteValue("ProjectId")) ?? throw new ArgumentException("Project Id is not there in route");
-            return Guid.Parse(projectId.ToString());
-        }
-        public Guid GetTaskIdFormRequest()
+        public (Guid? ProjectId, Guid? TaskId) GetRouteData()
         {
-            var taskId = (_httpContext?.HttpContext?.GetRouteValue("TaskId")) ?? throw new ArgumentException("There is no Task id in route");
-            return Guid.Parse(taskId.ToString());
+            Guid? ProjectId = null;
+            Guid? TaskId = null;
+
+            var projectIdValue = _httpContext?.HttpContext?.GetRouteValue("ProjectId")?.ToString();
+            var taskIdValue = _httpContext?.HttpContext?.GetRouteValue("TaskId")?.ToString();
+            if(Guid.TryParse(projectIdValue, out var pid))  //This line check if projectIdValue is parsanable if not then retrun and do not assing any thing to ProjectId which return null
+            {                                                             //If the value exist then if will parsen to Guid and return the value which is assiged to pid and will be set in   
+                ProjectId = pid;                                                   //Project Id here
+            }
+            if(Guid.TryParse(taskIdValue, out var tid))
+            {
+                TaskId = tid;
+            }
+            return (ProjectId, TaskId);
         }
     }
 }
