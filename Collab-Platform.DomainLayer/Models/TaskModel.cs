@@ -25,6 +25,7 @@ namespace Collab_Platform.DomainLayer.Models
         
         public ICollection<UserTask> UserTasks { get; set; }
         public ICollection<SubtaskModel> Subtasks { get; set; }
+        public ICollection<Channel> Channels { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

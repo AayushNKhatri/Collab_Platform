@@ -40,6 +40,7 @@ namespace Collab_Platform.InfastructureLayer.Database
                 x.Property(t => t.TaskId).ValueGeneratedOnAdd();
                 x.HasMany(t => t.Subtasks).WithOne(s => s.Task).HasForeignKey(s => s.TaskId);
                 x.HasMany(t => t.UserTasks).WithOne(ut=>ut.Task).HasForeignKey(ut => ut.TaskId);
+                x.HasMany(t => t.Channels).WithOne(t => t.Task).HasForeignKey(u => u.TaskId);
                 x.ToTable("Task");
             });
             modelBuilder.Entity<SubtaskModel>(x =>{
