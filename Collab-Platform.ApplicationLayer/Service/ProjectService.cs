@@ -43,8 +43,6 @@ namespace Collab_Platform.ApplicationLayer.Service
             try {
                 var userID = _helperService.GetTokenDetails().userId ?? throw new KeyNotFoundException("UserID not found");
                 var user = await _userRepo.GetAllUser();
-                //var userid = user.Select(u => u.Id);
-                //var doesUserExist = createProjectDto.ProjectMemberID.Contains(userID);
                 await _unitOfWork.BeginTranctionAsync();
                 var project = new ProjectModel {
                     ProjectId = Guid.NewGuid(),

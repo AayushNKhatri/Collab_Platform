@@ -7,8 +7,9 @@ namespace Collab_Platform.ApplicationLayer.Interface.RepoInterface
     {
         Task AddChannel(Channel channel);
         Task RemoveChannle(Channel channel);
-        Task<List<Channel>> GetChannelsByProjectId(Guid ProjectId);
         Task<List<Channel>> GetChannelsByTaskId(Guid TaskId);
         Task<Channel> GetChannelByID(Guid ChannelId);
+        Task AddUserToChanel(List<UserChannel> User);
+        Task RemoveUserFromChanel(List<UserChannel> User);
     }
 }

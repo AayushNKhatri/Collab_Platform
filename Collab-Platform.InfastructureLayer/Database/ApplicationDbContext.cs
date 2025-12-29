@@ -31,7 +31,6 @@ namespace Collab_Platform.InfastructureLayer.Database
                 x.Property(p => p.ProjectId).ValueGeneratedOnAdd();
                 x.HasOne(p => p.Creator).WithMany().HasForeignKey(p => p.CreatorId).OnDelete(DeleteBehavior.Restrict);
                 x.HasMany(p => p.Tasks).WithOne(x => x.Project).HasForeignKey(x => x.ProjectId);
-                x.HasMany(p => p.Channel).WithOne(x => x.Project).HasForeignKey(x => x.ProjectId);
                 x.HasMany(p=>p.CustomRoles).WithOne(x => x.Project).HasForeignKey(x => x.ProjectId);
                 x.ToTable("Project");
             });

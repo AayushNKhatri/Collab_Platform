@@ -21,19 +21,9 @@ namespace Collab_Platform.InfastructureLayer.Repository
         {
             _db.Remove(channel);
         }
-        public async Task<List<Channel>> GetChannelsByProjectId(Guid ProjectId)
-        {
-            return await _db.Channels
-                        .Include(x => x.Project)
-                        .Include(x => x.Creator)
-                        .Include(x => x.Task)
-                        .Where(x => x.ProjectId == ProjectId)
-                        .ToListAsync();
-        }
         public async Task<List<Channel>> GetChannelsByTaskId(Guid TaskId)
         {
             return await _db.Channels
-                        .Include(x => x.Project)
                         .Include(x => x.Creator)
                         .Include(x => x.Task)
                         .Where(x => x.TaskId == TaskId)
@@ -42,11 +32,15 @@ namespace Collab_Platform.InfastructureLayer.Repository
         public async Task<Channel> GetChannelByID(Guid ChannelId)
         {
             return await _db.Channels
-                        .Include(x => x.Project)
                         .Include(x => x.Creator)
                         .Include(x => x.Task)
                         .FirstOrDefaultAsync(x => x.ChannelId == ChannelId);
         }
-        
+        public async Task AddUserToChanel(List<UserChannel> User) {
+            await _db.UserChannels.AddRangeAsync(User);
+        }
+        public async Task RemoveUserFromChanel(List<UserChannel> User) {
+            _db.UserChannels.RemoveRange(User);
+        }
     }
 }
