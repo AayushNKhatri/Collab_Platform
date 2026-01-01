@@ -24,7 +24,6 @@ namespace Collab_Platform.DomainLayer.Models
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public ICollection<UserProject> UserProjects { get; set; }
         public ICollection<TaskModel> Tasks { get; set; }
-        public ICollection<Channel> Channel { get; set; }
         public ICollection<CustomRoleModels> CustomRoles { get; set; }
 
 

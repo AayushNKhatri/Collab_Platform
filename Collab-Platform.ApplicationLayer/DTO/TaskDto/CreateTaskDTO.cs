@@ -8,7 +8,7 @@ namespace Collab_Platform.ApplicationLayer.DTO.TaskDto
         public string? TaskDesc { get; set; }
         public DateTime? TaskDueDate { get; set; }
         public TaskStatusEnum TaskStatus { get; set; }
-        public string TaskLeaderId { get; set; }
+        public string? TaskLeaderId { get; set; }
         public List<string>? TaskMemberID { get; set; }
     }
 }

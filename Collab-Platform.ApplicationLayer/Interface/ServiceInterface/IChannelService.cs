@@ -8,5 +8,6 @@ namespace Collab_Platform.ApplicationLayer.Interface.ServiceInterface
         Task<List<ViewChannelsDTO>> GetChannlesByTask(Guid TaskId);
         Task<ViewChannelsDTO> GetChannelsById(Guid ChannelId);
         Task DeleteChannels(Guid ChannelId);
+        Task UpdateChannels(CreateChannelsDTO updateChannels, Guid ChannelId);
     }
 }

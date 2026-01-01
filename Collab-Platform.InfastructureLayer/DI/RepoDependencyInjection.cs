@@ -17,6 +17,7 @@ namespace Collab_Platform.InfastructureLayer.DI
             services.AddScoped<ITaskRepo, TaskRepo>();
             services.AddScoped<IPermissionRepo, PermissionRepo>();
             services.AddScoped<ICustomRoleRepo, CustomRoleRepo>();
+            services.AddScoped<IChannelRepo, ChannelRepo>();
             return services;
         } 
     }

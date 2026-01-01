@@ -16,6 +16,7 @@ namespace Collab_Platform.ApplicationLayer.DI
             services.AddScoped<ITaskInterface, TaskService>();
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<ICustomRolInterface, CustomRoleService>();
+            services.AddScoped<IChannelService, ChannelService>();
             return services;
         }
 

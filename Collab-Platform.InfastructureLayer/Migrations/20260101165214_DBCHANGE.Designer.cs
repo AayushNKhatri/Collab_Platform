@@ -3,6 +3,7 @@ using System;
 using Collab_Platform.InfastructureLayer.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Collab_Platform.InfastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260101165214_DBCHANGE")]
+    partial class DBCHANGE
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,6 +46,9 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("ProjectModelProjectId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TaskId")
                         .HasColumnType("uuid");
 
@@ -54,6 +60,8 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                     b.HasIndex("ChannelLeaderId");
 
                     b.HasIndex("CreatorId");
+
+                    b.HasIndex("ProjectModelProjectId");
 
                     b.HasIndex("TaskId");
 
@@ -637,6 +645,10 @@ namespace Collab_Platform.InfastructureLayer.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Collab_Platform.DomainLayer.Models.ProjectModel", null)
+                        .WithMany("Channel")
+                        .HasForeignKey("ProjectModelProjectId");
+
                     b.HasOne("Collab_Platform.DomainLayer.Models.TaskModel", "Task")
                         .WithMany("Channels")
                         .HasForeignKey("TaskId")
@@ -960,6 +972,8 @@ namespace Collab_Platform.InfastructureLayer.Migrations
 
             modelBuilder.Entity("Collab_Platform.DomainLayer.Models.ProjectModel", b =>
                 {
+                    b.Navigation("Channel");
+
                     b.Navigation("CustomRoles");
 
                     b.Navigation("Tasks");

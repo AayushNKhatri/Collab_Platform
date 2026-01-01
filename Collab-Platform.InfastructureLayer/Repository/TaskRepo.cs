@@ -23,13 +23,22 @@ namespace Collab_Platform.InfastructureLayer.Repository
 
         public async Task<List<TaskModel>> GetAllTaskByProjectId(Guid ProjectId)
         {
-            var task = await _db.Tasks.Include(x=>x.Project).Where(x => x.ProjectId == ProjectId).ToListAsync();
+            var task = await _db.Tasks
+               .Include(x => x.Project)
+                .Include(x => x.TaskLeader)
+                .Include(x => x.CreatedBy)
+                .Include(x => x.UserTasks)
+                .Where(x => x.ProjectId == ProjectId)
+                .ToListAsync();
             return task;
         }
 
         public async Task<TaskModel> GetTaskByTaskId(Guid TaskID)
         {
-            var task = await _db.Tasks.Include(x=>x.Project).FirstOrDefaultAsync(x=>x.TaskId == TaskID);
+            var task = await _db.Tasks.Include(x => x.Project)
+                .Include(x => x.TaskLeader)
+                .Include(x => x.CreatedBy)
+                .Include(x => x.UserTasks).FirstOrDefaultAsync(x=>x.TaskId == TaskID);
             return task;
         }
 
