@@ -1,4 +1,5 @@
 ﻿using Collab_Platform.ApplicationLayer.DTO.ProjectDto;
+using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
@@ -8,10 +9,10 @@ namespace Collab_Platform.ApplicationLayer.Service
     public class ProjectService : IProjectInterface
     {
         private readonly IProjectRepo _projectRepo;
-        private readonly IHelperService _helperService;
+        private readonly IDataHelper _helperService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserRepo _userRepo;
-        public ProjectService(IProjectRepo projectRepo, IHelperService helperService,IUnitOfWork unitOfWork, IUserRepo userRepo ) { 
+        public ProjectService(IProjectRepo projectRepo, IDataHelper helperService,IUnitOfWork unitOfWork, IUserRepo userRepo ) { 
             _projectRepo = projectRepo;
             _helperService = helperService;
             _unitOfWork = unitOfWork;
@@ -40,10 +41,10 @@ namespace Collab_Platform.ApplicationLayer.Service
 
         public async Task<ProjectModel> CreateProject(CreateProjectDto createProjectDto) //Validation for user sent in req
         {
+            await _unitOfWork.BeginTranctionAsync();
             try {
                 var userID = _helperService.GetTokenDetails().userId ?? throw new KeyNotFoundException("UserID not found");
                 var user = await _userRepo.GetAllUser();
-                await _unitOfWork.BeginTranctionAsync();
                 var project = new ProjectModel {
                     ProjectId = Guid.NewGuid(),
                     ProjectName = createProjectDto.ProjectName,
@@ -171,12 +172,9 @@ namespace Collab_Platform.ApplicationLayer.Service
 
         public async Task<ProjectDetailDto> UpdateProject(Guid projectID, UpdateProjectDto updateProject)
         {
-            if (updateProject == null)
-                throw new ArgumentNullException("Update Project is required to update the project.");
-
+            await _unitOfWork.BeginTranctionAsync();
             try
             {
-                await _unitOfWork.BeginTranctionAsync();
                 var projectModel = await _projectRepo.GetProjectByID(projectID) ?? throw new KeyNotFoundException("Project Not found");
                 var existingUser = projectModel.UserProjects
                     .Where(u => u.UserId != projectModel.CreatorId)

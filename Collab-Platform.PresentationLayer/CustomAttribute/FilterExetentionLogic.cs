@@ -1,5 +1,5 @@
-﻿using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
-using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
+﻿using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
+using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Microsoft.AspNetCore.Mvc.Filters;
 using static Collab_Platform.PresentationLayer.Middleware.ExecptionClass;
 
@@ -8,17 +8,19 @@ namespace Collab_Platform.PresentationLayer.CustomAttribute
     public class ProjectAcessExtention : IAsyncActionFilter
     {
 
-        private readonly IHelperService _helperService;
+        private readonly IDataHelper _helperService;
         private readonly ICustomRoleRepo _customRoleRepo;
         private readonly IProjectRepo _projectRepo;
         private readonly ITaskRepo _taskRepo;
+        private readonly IChannelRepo _channelRepo;
         private readonly string _accessType;
         public ProjectAcessExtention(
             string accessType,
             ICustomRoleRepo customRoleRepo,
-            IHelperService helperService,
+            IDataHelper helperService,
             IProjectRepo projectRepo,
-            ITaskRepo taskRepo
+            ITaskRepo taskRepo,
+            IChannelRepo channelRepo
 
             )
         {
@@ -27,6 +29,7 @@ namespace Collab_Platform.PresentationLayer.CustomAttribute
             _projectRepo = projectRepo;
             _accessType = accessType;
             _taskRepo = taskRepo;
+            _channelRepo = channelRepo;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -46,6 +49,14 @@ namespace Collab_Platform.PresentationLayer.CustomAttribute
             {
                 var task = await _taskRepo.GetTaskByTaskId(taskId);
                 if(task.CreatedById == currentUser)
+                {
+                    await next();
+                    return;
+                }
+            }
+            if (routeData.ChannelId is Guid ChannelId) {
+                var channel = await _channelRepo.GetChannelByID(ChannelId);
+                if (channel.CreatorId == currentUser) 
                 {
                     await next();
                     return;

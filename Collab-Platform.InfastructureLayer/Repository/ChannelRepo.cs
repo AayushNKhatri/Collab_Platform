@@ -24,6 +24,7 @@ namespace Collab_Platform.InfastructureLayer.Repository
         public async Task<List<Channel>> GetChannelsByTaskId(Guid TaskId)
         {
             return await _db.Channels
+                        .Include(x => x.UserChannels)
                         .Include(x => x.Creator)
                         .Include(x => x.Task)
                         .Where(x => x.TaskId == TaskId)
@@ -32,6 +33,8 @@ namespace Collab_Platform.InfastructureLayer.Repository
         public async Task<Channel> GetChannelByID(Guid ChannelId)
         {
             return await _db.Channels
+                        .Include(x => x.UserChannels)
+                        .ThenInclude(u => u.User)
                         .Include(x => x.Creator)
                         .Include(x => x.Task)
                         .FirstOrDefaultAsync(x => x.ChannelId == ChannelId);

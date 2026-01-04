@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
 using Collab_Platform.DomainLayer.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-
 namespace Collab_Platform.InfastructureLayer.Database
 {
     public class ApplicationDbContext : IdentityDbContext<UserModel>
@@ -25,6 +23,9 @@ namespace Collab_Platform.InfastructureLayer.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) { 
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<UserModel>(x => {
+                x.HasIndex(p => p.UserName);
+            });
             modelBuilder.Entity<ProjectModel>(x =>
             {
                 x.HasKey(p => p.ProjectId);
@@ -32,6 +33,7 @@ namespace Collab_Platform.InfastructureLayer.Database
                 x.HasOne(p => p.Creator).WithMany().HasForeignKey(p => p.CreatorId).OnDelete(DeleteBehavior.Restrict);
                 x.HasMany(p => p.Tasks).WithOne(x => x.Project).HasForeignKey(x => x.ProjectId);
                 x.HasMany(p=>p.CustomRoles).WithOne(x => x.Project).HasForeignKey(x => x.ProjectId);
+                x.HasIndex(x => x.ProjectName);
                 x.ToTable("Project");
             });
             modelBuilder.Entity<TaskModel>(x => { 
@@ -74,43 +76,66 @@ namespace Collab_Platform.InfastructureLayer.Database
                 x.HasOne(r => r.UploadedBy).WithMany().HasForeignKey(r => r.UploadedById).OnDelete(DeleteBehavior.Restrict);
                 x.ToTable("Resource");
              });
-            modelBuilder.Entity<UserProject>().ToTable("UserProject").HasKey(up => new { up.UserId, up.ProjectId });
-            modelBuilder.Entity<UserProject>().HasOne(up => up.User).WithMany(u => u.UserProjects).HasForeignKey(up => up.UserId);
-            modelBuilder.Entity<UserProject>().HasOne(up => up.Project).WithMany(p => p.UserProjects).HasForeignKey(up => up.ProjectId);
-            modelBuilder.Entity<UserTask>().ToTable("UserTask").HasKey(ut => new { ut.UserId, ut.TaskId });
-            modelBuilder.Entity<UserTask>().HasOne(ut => ut.User).WithMany(u => u.UserTasks).HasForeignKey(ut=>ut.UserId);
-            modelBuilder.Entity<UserTask>().HasOne(ut => ut.Task).WithMany(t => t.UserTasks).HasForeignKey(ut => ut.TaskId);
-            modelBuilder.Entity<UserChannel>().ToTable("UserChannel").HasKey(uc => new { uc.UserId, uc.ChannelId });
-            modelBuilder.Entity<UserChannel>().HasOne(uc => uc.Channel).WithMany(c => c.UserChannels).HasForeignKey(uc => uc.ChannelId);
-            modelBuilder.Entity<Permission>(
-                x =>
-                {
+            modelBuilder.Entity<UserProject>()
+                .ToTable("UserProject")
+                .HasKey(up => new { up.UserId, up.ProjectId });
+            modelBuilder.Entity<UserProject>()
+                .HasOne(up => up.User)
+                .WithMany(u => u.UserProjects)
+                .HasForeignKey(up => up.UserId);
+            modelBuilder.Entity<UserProject>()
+                .HasOne(up => up.Project)
+                .WithMany(p => p.UserProjects)
+                .HasForeignKey(up => up.ProjectId);
+            modelBuilder.Entity<UserTask>()
+                .ToTable("UserTask")
+                .HasKey(ut => new { ut.UserId, ut.TaskId });
+            modelBuilder.Entity<UserTask>()
+                .HasOne(ut => ut.User)
+                .WithMany(u => u.UserTasks)
+                .HasForeignKey(ut=>ut.UserId);
+            modelBuilder.Entity<UserTask>()
+                .HasOne(ut => ut.Task)
+                .WithMany(t => t.UserTasks)
+                .HasForeignKey(ut => ut.TaskId);
+            modelBuilder.Entity<UserChannel>()
+                .ToTable("UserChannel")
+                .HasKey(uc => new { uc.UserId, uc.ChannelId });
+            modelBuilder.Entity<UserChannel>()
+                .HasOne(uc => uc.Channel)
+                .WithMany(c => c.UserChannels)
+                .HasForeignKey(uc => uc.ChannelId);
+            modelBuilder.Entity<Permission>(x =>{
                     x.HasKey(x =>x.PermissionId);
                     x.Property(x =>x.PermissionId).ValueGeneratedOnAdd();
                     x.ToTable("Permission");
-                }
-            );
-            modelBuilder.Entity<RolePermissionModel>().ToTable("RolePermission").HasKey( rp => new { rp.CustomRoleId , rp.PermissionId});
+                    x.HasIndex(u => u.Key).IsUnique();
+            });
             modelBuilder.Entity<RolePermissionModel>()
-            .HasOne(rp => rp.CustomRole)
-            .WithMany(r=>r.RolePermissions)
-            .HasForeignKey(rp => rp.CustomRoleId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .ToTable("RolePermission")
+                .HasKey( rp => new { rp.CustomRoleId , rp.PermissionId});
             modelBuilder.Entity<RolePermissionModel>()
-            .HasOne( rp => rp.Permission)
-            .WithMany( rp => rp.RolePermissions)
-            .HasForeignKey(rp => rp.PermissionId)
-            .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<CustomRoleUser>().ToTable("CustomRole").HasKey( rp => new {rp.CustomRoleId, rp.UserID});
+                .HasOne(rp => rp.CustomRole)
+                .WithMany(r=>r.RolePermissions)
+                .HasForeignKey(rp => rp.CustomRoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<RolePermissionModel>()
+                .HasOne( rp => rp.Permission)
+                .WithMany( rp => rp.RolePermissions)
+                .HasForeignKey(rp => rp.PermissionId)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<CustomRoleUser>()
-            .HasOne(u => u.user)
-            .WithMany( u => u.CustomRoles)
-            .HasForeignKey( u => u.UserID);
+                .ToTable("CustomRole")
+                .HasKey( rp => new {rp.CustomRoleId, rp.UserID});
             modelBuilder.Entity<CustomRoleUser>()
-            .HasOne( u => u.customRole)
-            .WithMany( u => u.CustomRoleUsers)
-            .HasForeignKey( u => u.CustomRoleId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(u => u.user)
+                .WithMany( u => u.CustomRoles)
+                .HasForeignKey( u => u.UserID);
+            modelBuilder.Entity<CustomRoleUser>()
+                .HasOne( u => u.customRole)
+                .WithMany( u => u.CustomRoleUsers)
+                .HasForeignKey( u => u.CustomRoleId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -1,4 +1,5 @@
 using Collab_Platform.ApplicationLayer.DTO.ChannelsDto;
+using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
@@ -8,46 +9,52 @@ namespace Collab_Platform.ApplicationLayer.Service
     public class ChannelService : IChannelService
     {
         private readonly IChannelRepo _channelRepo;
-        private readonly IHelperService _helperService;
+        private readonly IDataHelper _helperService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ChannelService( IChannelRepo channelRepo, IHelperService helperService, IUnitOfWork unitOfWork)
+        public ChannelService( IChannelRepo channelRepo, IDataHelper helperService, IUnitOfWork unitOfWork)
         {
             _channelRepo = channelRepo;
             _helperService = helperService;
             _unitOfWork = unitOfWork;
         }
         public async Task CreateChannel(CreateChannelsDTO createChannels, Guid TaskId) {
+
+            await _unitOfWork.BeginTranctionAsync();
             try {
                 var userId = _helperService.GetTokenDetails().userId;
-                await _unitOfWork.BeginTranctionAsync();
+                List<string> newUser = new List<string>();
+               
                 var channels = new Channel
                 {
                     ChannelId = Guid.NewGuid(),
                     ChannelName = createChannels.ChannelName,
                     CreatorId = userId,
                     TaskId = TaskId,
-                    CreatedAt = new DateTime()
+                    CreatedAt = new DateTime(),
+                    ChannelLeaderId = createChannels.ChannelLeaderId ?? userId
+
                 };
-                if (createChannels.ChannelLeaderId != null)
-                {
-                    channels.ChannelLeaderId = createChannels.ChannelLeaderId;
-                }
-                channels.ChannelLeaderId = userId;
                 await _channelRepo.AddChannel(channels);
                 await _unitOfWork.SaveChangesAsync();
-                if (createChannels.UserID != null) {
-                    var userForChanels = createChannels.UserID;
-                    userForChanels.Add(userId);
-                    var users = userForChanels.Select(u => new UserChannel
-                    {
-                        ChannelId = channels.ChannelId,
-                        UserId = u
-                    }).ToList();
-                    await _channelRepo.AddUserToChanel(users);
+                if (createChannels.ChannelLeaderId != null)
+                {
+                    newUser.Add(createChannels.ChannelLeaderId);
                 }
-                await _unitOfWork.CommitTranctionAsync();
+                newUser.Add(userId);
+                if (createChannels.UserID != null) {
+                    newUser.AddRange(createChannels.UserID);
+                }
 
+                var uniqueUsersId = newUser.Distinct();
+                var users = uniqueUsersId.Select(id => new UserChannel
+                {
+                    ChannelId = channels.ChannelId,
+                    UserId = id
+                }).ToList();
+                await _channelRepo.AddUserToChanel(users);
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTranctionAsync();
             }
             catch {
                 await _unitOfWork.RollBackTranctionAsync();
@@ -100,6 +107,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             await _channelRepo.RemoveChannle(channel);
         }
         public async Task UpdateChannels(CreateChannelsDTO updateChannels, Guid ChannelId) {
+            await _unitOfWork.BeginTranctionAsync();
             try {
                 var channels = await _channelRepo.GetChannelByID(ChannelId) ?? throw new KeyNotFoundException("Channel not found");
                 channels.ChannelName = updateChannels.ChannelName;

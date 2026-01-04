@@ -1,4 +1,5 @@
 ﻿using Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO;
+using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
@@ -9,10 +10,10 @@ namespace Collab_Platform.ApplicationLayer.Service
     {
         public readonly ICustomRoleRepo _customRole;
         public readonly IPermissionRepo _permissionRepo;
-        public readonly IHelperService _helperService;
+        public readonly IDataHelper _helperService;
         public readonly IProjectInterface _projectService;
         public readonly IUnitOfWork _unitOfWork;
-        public CustomRoleService(ICustomRoleRepo customRole, IPermissionRepo permissionRepo, IHelperService helperService, IProjectInterface prjectService, IUnitOfWork unitOfWork)
+        public CustomRoleService(ICustomRoleRepo customRole, IPermissionRepo permissionRepo, IDataHelper helperService, IProjectInterface prjectService, IUnitOfWork unitOfWork)
         {
             _customRole = customRole;
             _permissionRepo = permissionRepo;

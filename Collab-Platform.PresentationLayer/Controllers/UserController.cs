@@ -1,4 +1,5 @@
 ﻿using Collab_Platform.ApplicationLayer.DTO.UserDto;
+using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,8 +12,8 @@ namespace Collab_Platform.PresentationLayer.Controllers
     public class UserController : ControllerBase
     {
         public readonly IUserInterface _userInterface;
-        public readonly IHelperService _helperService;
-        public UserController(IUserInterface userInterface, IHelperService helperService) { 
+        public readonly IDataHelper _helperService;
+        public UserController(IUserInterface userInterface, IDataHelper helperService) { 
             _userInterface = userInterface;
             _helperService = helperService;
         }

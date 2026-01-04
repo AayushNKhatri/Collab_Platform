@@ -31,7 +31,11 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 if (string.IsNullOrEmpty(JWTToken)) {
                     return Unauthorized("You are not authorize");
                 }
-                return Ok(new { Token = JWTToken , Mesesege = "You are Authorize"});
+                return Ok(new APIResponse<string> { 
+                    Data = JWTToken,
+                    Messege = "You are authorize",
+                    Success = true
+                });
         }
     }
 }

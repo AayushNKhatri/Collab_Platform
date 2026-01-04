@@ -1,4 +1,5 @@
 ﻿using Collab_Platform.ApplicationLayer.DTO.TaskDto;
+using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
@@ -9,11 +10,11 @@ namespace Collab_Platform.ApplicationLayer.Service
     public class TaskService : ITaskInterface
     {
         public readonly ITaskRepo _taskRepo;
-        public readonly IHelperService _helperService;
+        public readonly IDataHelper _helperService;
         public readonly IUnitOfWork _unitOfWork;
         public readonly IProjectInterface _projectInterface;
         public readonly IProjectRepo _projectRepo;
-        public TaskService(ITaskRepo taskRepo, IHelperService helperService, IUnitOfWork unitOfWork, IProjectInterface projectInterface, IProjectRepo projectRepo)
+        public TaskService(ITaskRepo taskRepo, IDataHelper helperService, IUnitOfWork unitOfWork, IProjectInterface projectInterface, IProjectRepo projectRepo)
         {
             _taskRepo = taskRepo;
             _helperService = helperService;
@@ -23,12 +24,13 @@ namespace Collab_Platform.ApplicationLayer.Service
         }
         public async Task CreateTask(CreateTaskDTO createTask, Guid ProjectId)
         {
+
+            await _unitOfWork.BeginTranctionAsync();
             try
             {
                 if (createTask == null) throw new ArgumentNullException("Fill the create Task Proprly");
                 var project = await _projectRepo.GetProjectByID(ProjectId);
                 var TaskCreatorId = _helperService.GetTokenDetails().userId ?? throw new KeyNotFoundException("User id not found");
-                await _unitOfWork.BeginTranctionAsync();
                 var task = new TaskModel
                 {
                     TaskId = Guid.NewGuid(),

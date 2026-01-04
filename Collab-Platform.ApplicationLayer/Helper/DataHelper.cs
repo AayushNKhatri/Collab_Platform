@@ -1,14 +1,14 @@
-﻿using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
+﻿using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using System.Security.Claims;
 
-namespace Collab_Platform.ApplicationLayer.Service
+namespace Collab_Platform.ApplicationLayer.Helper
 {
-    public class Helper : IHelperService
+    public class DataHelper : IDataHelper
     {
         private readonly IHttpContextAccessor _httpContext;
-        public Helper(IHttpContextAccessor httpContext) 
+        public DataHelper(IHttpContextAccessor httpContext) 
         {
             _httpContext = httpContext;
         }
@@ -23,13 +23,15 @@ namespace Collab_Platform.ApplicationLayer.Service
                 throw new Exception($"Errror {e}");
             }
         }
-        public (Guid? ProjectId, Guid? TaskId) GetRouteData()
+        public (Guid? ProjectId, Guid? TaskId, Guid? ChannelId) GetRouteData()
         {
             Guid? ProjectId = null;
             Guid? TaskId = null;
-
+            Guid? ChannelId = null;
             var projectIdValue = _httpContext?.HttpContext?.GetRouteValue("ProjectId")?.ToString();
             var taskIdValue = _httpContext?.HttpContext?.GetRouteValue("TaskId")?.ToString();
+            var ChannelValue = _httpContext?.HttpContext?.GetRouteValue("ChannelId")?.ToString();
+
             if(Guid.TryParse(projectIdValue, out var pid))  //This line check if projectIdValue is parsanable if not then retrun and do not assing any thing to ProjectId which return null
             {                                                             //If the value exist then if will parsen to Guid and return the value which is assiged to pid and will be set in   
                 ProjectId = pid;                                                   //Project Id here
@@ -38,7 +40,10 @@ namespace Collab_Platform.ApplicationLayer.Service
             {
                 TaskId = tid;
             }
-            return (ProjectId, TaskId);
+            if (Guid.TryParse(ChannelValue, out var cid)) {
+                ChannelId = cid;
+            }
+            return (ProjectId, TaskId, ChannelId);
         }
     }
 }

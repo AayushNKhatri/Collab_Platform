@@ -40,5 +40,9 @@ namespace Collab_Platform.ApplicationLayer.Service
             }).ToList();
             return apiContoller;
         }
+        public async Task AddContollerToDB() {
+            var apiContoller = await GetContoller();
+            Console.WriteLine("This is the api contoller", apiContoller);
+        }
     }
 }

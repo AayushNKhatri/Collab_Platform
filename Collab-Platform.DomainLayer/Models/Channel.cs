@@ -5,7 +5,6 @@ namespace Collab_Platform.DomainLayer.Models
     public class Channel 
     {
         public Guid ChannelId { get; set; }
-        [Required]
         public string ChannelName { get; set; }
         public string CreatorId { get; set; }
         public UserModel Creator { get; set; }
