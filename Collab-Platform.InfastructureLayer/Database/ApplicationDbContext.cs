@@ -105,6 +105,10 @@ namespace Collab_Platform.InfastructureLayer.Database
                 .HasOne(uc => uc.Channel)
                 .WithMany(c => c.UserChannels)
                 .HasForeignKey(uc => uc.ChannelId);
+            modelBuilder.Entity<UserChannel>()
+                .HasOne(uc => uc.User)
+                .WithMany(c => c.UserChannels)
+                .HasForeignKey(uc => uc.UserId);
             modelBuilder.Entity<Permission>(x =>{
                     x.HasKey(x =>x.PermissionId);
                     x.Property(x =>x.PermissionId).ValueGeneratedOnAdd();

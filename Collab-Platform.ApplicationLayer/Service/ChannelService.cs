@@ -62,24 +62,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             }
         }
         public async Task<List<ViewChannelsDTO>> GetChannlesByTask(Guid TaskId) {
-            var channels = await _channelRepo.GetChannelsByTaskId(TaskId) ?? throw new KeyNotFoundException("There is no Channel for this task");
-            var channelsReturn = channels.Select(u => new ViewChannelsDTO
-            {
-                ChannelId = u.ChannelId,
-                ChannelName = u.ChannelName,
-                ChannelLeaderId = u.ChannelLeaderId,
-                ChannelLeaderName = u.ChannelName,
-                CreatorId = u.CreatorId,
-                CreatorName = u.Creator.UserName,
-                TaskId = u.TaskId,
-                TaskName = u.Task.TaskName,
-                User = u.UserChannels.Select(u => new ChannelUser
-                {
-                    UserId = u.UserId,
-                    UserName = u.User.UserName
-                }).ToList()
-            }).ToList();
-            return channelsReturn;
+            return await _channelRepo.GetChannelsByTaskId(TaskId) ?? throw new KeyNotFoundException("There is no Channel for this task");
         }
         public async Task<ViewChannelsDTO> GetChannelsById(Guid ChannelId) {
             var channels = await _channelRepo.GetChannelByID(ChannelId) ?? throw new KeyNotFoundException("Channel not found");

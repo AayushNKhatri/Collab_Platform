@@ -44,18 +44,13 @@ namespace Collab_Platform.ApplicationLayer.Service
                     UpdatedAt = DateTime.UtcNow,
                 };
                 await _taskRepo.CreateTask(task);
-                List<UserTask> newUserTask = new List<UserTask>();
+                List<string> newUserTask = new List<string>();
                 var projectMember = await _projectInterface.GetUserProjectDetails(project) ?? throw new KeyNotFoundException("There is no member in project select member first");
                 var projectMemberID = projectMember.Select(m => m.UserId).ToList();
                 if (createTask.TaskLeaderId == null)
                 {
                     task.TaskLeaderId = TaskCreatorId;
-                    var taskLeader = new UserTask
-                    {
-                        TaskId = task.TaskId,
-                        UserId = TaskCreatorId
-                    };
-                    newUserTask.Add(taskLeader);
+                    newUserTask.Add(task.TaskLeaderId);
                 }
                 else {
                     if (projectMemberID.Select(u => u).ToString() != createTask.TaskLeaderId) {
@@ -63,12 +58,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                     }
 
                     task.TaskLeaderId = createTask.TaskLeaderId;
-                    var taskLeader = new UserTask
-                    {
-                        TaskId = task.TaskId,
-                        UserId = createTask.TaskLeaderId
-                    };
-                    newUserTask.Add(taskLeader);
+                    newUserTask.Add(task.TaskLeaderId);
                 }
                 if (createTask.TaskMemberID != null) {
                     var taskMemberFormDTO = createTask.TaskMemberID;
@@ -77,24 +67,22 @@ namespace Collab_Platform.ApplicationLayer.Service
                     {
                         throw new KeyNotFoundException("Task Member IDs are not part of the project");
                     }
-                    var taskMemberIds = createTask.TaskMemberID?.Distinct().ToList() ?? new List<string>();
+                    newUserTask.AddRange(createTask.TaskLeaderId);
                     var invalidUser = createTask.TaskMemberID.Where(id => !projectMemberID.Contains(id)).ToList();
                     if (invalidUser.Count > 0)
                     {
                         await _unitOfWork.RollBackTranctionAsync();
                         throw new ArgumentException("Some users are not part of the project");
                     }
-                    taskMemberIds.Add(TaskCreatorId);
-                    taskMemberIds = taskMemberIds.Distinct().ToList();
-                    var userTask = taskMemberIds.Select(u => new UserTask
-                    {
-                        TaskId = task.TaskId,
-                        UserId = u
-                    }).ToList();
-                    newUserTask.AddRange(userTask);
+                    newUserTask.Add(TaskCreatorId);
+                    var uniqueUser = newUserTask.Distinct().ToList();
                 }
-                
-                await _taskRepo.addUserToTask(newUserTask);
+                var userTask = newUserTask.Select(u => new UserTask
+                {
+                    TaskId = task.TaskId,
+                    UserId = u
+                }).ToList();
+                await _taskRepo.addUserToTask(userTask);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTranctionAsync();
             }
@@ -284,7 +272,6 @@ namespace Collab_Platform.ApplicationLayer.Service
             }
 
         }
-
         public async Task UpdateTask(Guid TaskId, UpdateTaskDto updateTask)
         {
             await _unitOfWork.BeginTranctionAsync();
@@ -345,10 +332,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 await _unitOfWork.RollBackTranctionAsync();
                 throw;
             }
-
-
         }
-
         public async Task<List<TaskDetailDto>> GetTasksByCreatorId()
         {
             var UserID = _helperService.GetTokenDetails().userId;
