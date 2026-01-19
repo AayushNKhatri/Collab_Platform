@@ -1,4 +1,5 @@
-﻿using Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO;
+﻿using Collab_Platform.ApplicationLayer.DTO.Mapper;
+using Collab_Platform.ApplicationLayer.DTO.ProjectRoleDTO;
 using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
@@ -25,55 +26,13 @@ namespace Collab_Platform.ApplicationLayer.Service
         public async Task<ProjectRoleDetailDTO> GetAllCutomRoleByRoleID(Guid CustomRoleID)
         {
             var customRole = await _customRole.GetCustomRoleByRoleID(CustomRoleID) ?? throw new KeyNotFoundException("Custom role Not found with that id");
-            var pemission = customRole.RolePermissions.Select(u => u.Permission);
-            var user = customRole.CustomRoleUsers.Select(u => u.user);
-            var response = new ProjectRoleDetailDTO
-            {
-                CustomRoleId = customRole.CustomRoleId,
-                CustomRoleDesc = customRole.CustomRoleDesc,
-                CustomRoleName = customRole.CustomRoleName,
-                ProjectID = customRole.ProjectId,
-                ProjectName = customRole.Project.ProjectName,
-                RoleCreatorId = customRole.RoleCreatorId,
-                RoleCreatorName = customRole.RoleCreator.UserName,
-                permission = pemission.Select(u => new PermissionDTO
-                {
-                    PermissionId = u.PermissionId,
-                    PermissionKey = u.Key,
-                }).ToList(),
-                RoleUser = user.Select(u => new RoleUserDTO
-                {
-                    UserID = u.Id,
-                    UserName = u.UserName
-                }).ToList()
-            };
-            return response;
-        }
+            var response = CustomRoleMapper.ToProjectRole(customRole);
+            return response; 
+        } 
         public async Task<List<ProjectRoleDetailDTO>> GetAllCustomRoleByProject(Guid ProjectID)
         {
             var customRole = await _customRole.GetAllCustomRoleByProject(ProjectID) ?? throw new KeyNotFoundException("There is no project which has such id");      //Error Due to user being empty
-            var ProjectRoleDetail = customRole.Select(u => new ProjectRoleDetailDTO
-            {
-                CustomRoleId = u.CustomRoleId,
-                CustomRoleDesc = u.CustomRoleDesc,
-                CustomRoleName = u.CustomRoleName,
-                ProjectID = u.ProjectId,
-                ProjectName = u.Project.ProjectName,
-                RoleCreatorId = u.RoleCreatorId,
-                RoleCreatorName = u.RoleCreator.UserName,
-                permission = u.RolePermissions.Select(u =>
-                    new PermissionDTO
-                    {
-                        PermissionId = u.PermissionId,
-                        PermissionKey = u.Permission.Key,
-                    }
-                ).ToList(),
-                RoleUser = u.CustomRoleUsers.Select(u => new RoleUserDTO
-                {
-                    UserID = u.user.Id,
-                    UserName = u.user.UserName
-                }).ToList()
-            }).ToList();
+            var ProjectRoleDetail = CustomRoleMapper.ToListProjectRole(customRole);
             return ProjectRoleDetail;
         }
         public async Task CreateCutomeRole(CretaeCustomRoleDTO createCustomRole, Guid ProjectID)  //Add Validtion where user and permission key are valdi
@@ -168,10 +127,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                 await _unitOfWork.RollBackTranctionAsync(); 
                 throw;
             }
-
-
         }
-
         public async Task AddUserToRole(List<string> UserId, Guid CustomRoleID) { 
             var CustomRole = await _customRole.GetCustomRoleByRoleID(CustomRoleID) ?? throw new KeyNotFoundException("Project with given id does not exist");
             var existingUser = CustomRole.CustomRoleUsers.Select(u => u.UserID).ToHashSet();

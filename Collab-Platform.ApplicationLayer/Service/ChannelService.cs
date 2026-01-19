@@ -1,4 +1,6 @@
+using AutoMapper;
 using Collab_Platform.ApplicationLayer.DTO.ChannelsDto;
+using Collab_Platform.ApplicationLayer.DTO.Mapper;
 using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
@@ -66,23 +68,8 @@ namespace Collab_Platform.ApplicationLayer.Service
         }
         public async Task<ViewChannelsDTO> GetChannelsById(Guid ChannelId) {
             var channels = await _channelRepo.GetChannelByID(ChannelId) ?? throw new KeyNotFoundException("Channel not found");
-            var channelsReturn = new ViewChannelsDTO
-            {
-                ChannelId = channels.ChannelId,
-                ChannelName = channels.ChannelName,
-                ChannelLeaderId = channels.ChannelLeaderId,
-                ChannelLeaderName = channels.ChannelName,
-                CreatorId = channels.CreatorId,
-                CreatorName = channels.ChannelName,
-                TaskId = channels.TaskId,
-                TaskName = channels.Task.TaskName,
-                User = channels.UserChannels.Select(u => new ChannelUser
-                {
-                    UserId = u.UserId,
-                    UserName = u.User.UserName
-                }).ToList()
-            };
-            return channelsReturn;
+            var mapData = ChannelMapper.ToChannelDTO(channels);
+            return mapData;
         }
         public async Task DeleteChannels(Guid ChannelId)
         {

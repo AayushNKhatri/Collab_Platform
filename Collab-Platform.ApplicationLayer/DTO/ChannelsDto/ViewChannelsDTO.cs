@@ -1,7 +1,4 @@
-﻿using Collab_Platform.DomainLayer.Models;
-using System.ComponentModel.DataAnnotations;
-
-namespace Collab_Platform.ApplicationLayer.DTO.ChannelsDto
+﻿namespace Collab_Platform.ApplicationLayer.DTO.ChannelsDto
 {
     public class ViewChannelsDTO
     {

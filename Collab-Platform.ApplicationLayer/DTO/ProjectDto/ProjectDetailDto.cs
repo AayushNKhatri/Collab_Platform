@@ -13,8 +13,6 @@ namespace Collab_Platform.ApplicationLayer.DTO.ProjectDto
         public DateTime StartedAt { get; set; }
         public DateTime? EstComplete { get; set; }
         public DateTime? ActualComplete { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
         public List<UserProjectDetailsDto> ? UserDetails { get; set; }
     }
 

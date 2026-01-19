@@ -1,4 +1,5 @@
-﻿using Collab_Platform.ApplicationLayer.DTO.ProjectDto;
+﻿using Collab_Platform.ApplicationLayer.DTO.Mapper;
+using Collab_Platform.ApplicationLayer.DTO.ProjectDto;
 using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
@@ -58,24 +59,19 @@ namespace Collab_Platform.ApplicationLayer.Service
                 };
                 var result = await _projectRepo.CreateProject(project);
                 await _unitOfWork.SaveChangesAsync();
-                var useProject = new List<UserProject>
-                {
-                    new UserProject{
-                    ProjectId = project.ProjectId,
-                    UserId = userID,
-                    }
-                };
-                await _projectRepo.addUserToProject(useProject);
+                var userProject = new List<string>();
+                userProject.Add(userID);
                 if (createProjectDto.ProjectMemberID != null)
                 {
-                    var projectMember = createProjectDto.ProjectMemberID.Distinct().Select(u => new UserProject
-                    {
-                        ProjectId = project.ProjectId,
-                        UserId = u,
-                    }).ToList();
-                    await _projectRepo.addUserToProject(projectMember);
+                    var projectMember = createProjectDto.ProjectMemberID.Distinct().Select(u => u).ToList();
+                    userProject.AddRange(projectMember);
                 }
-
+                var toAdd = userProject.Select(u => new UserProject
+                {
+                    ProjectId = project.ProjectId,
+                    UserId = u
+                }).ToList();
+                await _projectRepo.addUserToProject(toAdd);
                 var saveResult = await _unitOfWork.SaveChangesAsync();
                 if (saveResult <= 0)
                 {
@@ -93,26 +89,9 @@ namespace Collab_Platform.ApplicationLayer.Service
 
         public async Task<List<ProjectDetailDto>> GetAllProject()
         {
-            var result = await _projectRepo.GetAllProject();
-            return result.Select(project => new ProjectDetailDto
-            {
-                ProjectId = project.ProjectId,
-                ProjectName = project.ProjectName,
-                CreatorName = project.Creator.UserName,
-                ActualComplete = project.ActualComplete,
-                PorjectVisibility = project.PorjectVisibility,
-                InviteCode = project.InviteCode,
-                ProjectDesc = project.ProjectDesc,
-                CreatedAt = project.CreatedAt,
-                EstComplete = project.EstComplete,
-                StartedAt = project.StartedAt,
-                UpdatedAt = project.UpdatedAt,
-                UserDetails = project.UserProjects.Select(up => new UserProjectDetailsDto
-                {
-                    UserId = up.UserId,
-                    Username = up.User.UserName
-                }).ToList()
-            }).ToList();
+            var result = await _projectRepo.GetAllProject() ?? throw new KeyNotFoundException("No project found");
+            var res = ProjectMapper.ToListProjectDTO(result);
+            return res;
         }
 
         public async Task RemoveUserFormProject( Guid projectId, List<string> UserID)
@@ -120,28 +99,13 @@ namespace Collab_Platform.ApplicationLayer.Service
             var userPorject = await _projectRepo.GetUserProjectByUserIDs(UserID, projectId);
             if(!userPorject.Any())
                 throw new  KeyNotFoundException("No user found with that id");
-            _projectRepo.deleteUserProject(userPorject);
+            await _projectRepo.deleteUserProject(userPorject);
         }
 
         public async Task<ProjectDetailDto> GetProjectById(Guid projectId)
         {
             var result = await _projectRepo.GetProjectByID(projectId) ?? throw new KeyNotFoundException("No Project found with that id");
-            var userDetails = await GetUserProjectDetails(result);
-            var project = new ProjectDetailDto
-            {
-                ProjectId = result.ProjectId,
-                ProjectName = result.ProjectName,
-                ProjectDesc = result.ProjectDesc,
-                CreatorName = result.Creator.UserName,
-                PorjectVisibility = result.PorjectVisibility,
-                InviteCode = result.InviteCode,
-                StartedAt = result.StartedAt,
-                EstComplete = result.EstComplete,
-                ActualComplete = result.ActualComplete,
-                CreatedAt = result.CreatedAt,
-                UpdatedAt = result.UpdatedAt,
-                UserDetails = userDetails
-            };
+            var project = ProjectMapper.ToProjectDto(result);
             return project;
         }
 
@@ -149,28 +113,11 @@ namespace Collab_Platform.ApplicationLayer.Service
         {
             var userId = _helperService.GetTokenDetails().Item1 ?? throw new KeyNotFoundException("UserID not found");
             var result = await _projectRepo.GetAllProjectByUserID(userId) ?? throw new KeyNotFoundException("No project found for given user");
-            var project = result.Select( p => new ProjectDetailDto{
-                ProjectId = p.ProjectId,
-                ProjectName = p.ProjectName,
-                ProjectDesc = p.ProjectDesc,
-                CreatorName = p.Creator.UserName,
-                PorjectVisibility = p.PorjectVisibility,
-                InviteCode = p.InviteCode,
-                StartedAt = p.StartedAt,
-                EstComplete = p.EstComplete,
-                ActualComplete = p.ActualComplete,
-                CreatedAt = p.CreatedAt,
-                UpdatedAt = p.UpdatedAt,
-                UserDetails = p.UserProjects.Select(u => new UserProjectDetailsDto
-                {
-                    UserId = u.UserId,
-                    Username = u.User.UserName
-                }).ToList()
-            }).ToList();
+            var project = ProjectMapper.ToListProjectDTO(result);
             return project;
         }
 
-        public async Task<ProjectDetailDto> UpdateProject(Guid projectID, UpdateProjectDto updateProject)
+        public async Task UpdateProject(Guid projectID, UpdateProjectDto updateProject)
         {
             await _unitOfWork.BeginTranctionAsync();
             try
@@ -201,24 +148,6 @@ namespace Collab_Platform.ApplicationLayer.Service
 
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTranctionAsync();
-
-                var userDetails = await GetUserProjectDetails(projectModel);
-                var projectDetail = new ProjectDetailDto
-                {
-                    ProjectId = projectModel.ProjectId, 
-                    ProjectName = projectModel.ProjectName,
-                    ProjectDesc = projectModel.ProjectDesc,
-                    CreatorName = projectModel.Creator.UserName,
-                    PorjectVisibility = projectModel.PorjectVisibility,
-                    InviteCode = projectModel.InviteCode,
-                    StartedAt = projectModel.StartedAt,
-                    EstComplete = projectModel.EstComplete,
-                    ActualComplete = projectModel.ActualComplete,
-                    CreatedAt = projectModel.CreatedAt,
-                    UpdatedAt = projectModel.UpdatedAt,
-                    UserDetails = userDetails,
-                };
-                return projectDetail;
             }
             catch{
                 await _unitOfWork.RollBackTranctionAsync();

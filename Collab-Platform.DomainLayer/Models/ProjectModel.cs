@@ -25,8 +25,5 @@ namespace Collab_Platform.DomainLayer.Models
         public ICollection<UserProject> UserProjects { get; set; }
         public ICollection<TaskModel> Tasks { get; set; }
         public ICollection<CustomRoleModels> CustomRoles { get; set; }
-
-
-
     }
 }

@@ -65,8 +65,8 @@ namespace Collab_Platform.PresentationLayer.Controllers
         [PermissionValidation("project_edit")]
         public async Task<IActionResult> UpdateProject([FromBody] UpdateProjectDto updateProject, [FromRoute]Guid ProjectId)
         { 
-            var result = await _projectService.UpdateProject(ProjectId, updateProject) ;
-            return Ok(new APIResponse<ProjectDetailDto> { Success = true, Messege = "Sucessfully updated project", Data=result });  
+            await _projectService.UpdateProject(ProjectId, updateProject) ;
+            return Ok(new APIResponse<ProjectDetailDto> { Success = true, Messege = "Sucessfully updated project" });  
         }
         [HttpDelete("{ProjectId}")]
         [PermissionValidation("project_edit")]

@@ -1,4 +1,5 @@
-﻿using Collab_Platform.ApplicationLayer.DTO.TaskDto;
+﻿using Collab_Platform.ApplicationLayer.DTO.Mapper;
+using Collab_Platform.ApplicationLayer.DTO.TaskDto;
 using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
@@ -104,58 +105,14 @@ namespace Collab_Platform.ApplicationLayer.Service
         public async Task<TaskDetailDto> GetTaskById(Guid TaskId)
         {
             var task = await _taskRepo.GetTaskByTaskId(TaskId) ?? throw new KeyNotFoundException("Task does not exist for this id");
-            var taskDetail = new TaskDetailDto
-            {
-                TaskId = task.TaskId,
-                TaskName = task.TaskName,
-                TaskDesc = task.TaskDesc,
-                TaskDueDate = task.TaskDueDate,
-                TaskStatus = task.TaskStatus,
-                Project = new ProjectDetail
-                {
-                    ProjectId = task.Project.ProjectId,
-                    ProjectName = task.Project.ProjectName,
-                },
-                TaskLeader = new TaskLeader
-                {
-                    LeaderId = task.TaskLeaderId,
-                    LeaderName = task.TaskLeader.UserName,
-                },
-                Creator = new Creator
-                {
-                    UserId = task.CreatedBy.Id,
-                    UserName = task.CreatedBy.UserName,
-                }
-            };
+            var taskDetail = TaskMapper.ToTaskDetailDto(task);
             return taskDetail;
         }
 
         public async Task<List<TaskDetailDto>> GetTaskByProject(Guid ProjectId)
         {
             var task = await _taskRepo.GetAllTaskByProjectId(ProjectId) ?? throw new KeyNotFoundException("This Project id dont have any task");
-            var taskDetail = task.Select(t => new TaskDetailDto
-            {
-                TaskId = t.TaskId,
-                TaskName = t.TaskName,
-                TaskDesc = t.TaskDesc,
-                TaskDueDate = t.TaskDueDate,
-                TaskStatus = t.TaskStatus,
-                Project = new ProjectDetail
-                {
-                    ProjectId = t.Project.ProjectId,
-                    ProjectName = t.Project.ProjectName,
-                },
-                TaskLeader = new TaskLeader
-                {
-                    LeaderId = t.TaskLeaderId,
-                    LeaderName = t.TaskLeader.UserName,
-                },
-                Creator = new Creator
-                {
-                    UserId = t.CreatedById,
-                    UserName = t.CreatedBy.UserName
-                }
-            }).ToList();
+            var taskDetail = TaskMapper.ToListTaskDetailDto(task);
             return taskDetail;
         }
 
@@ -163,29 +120,7 @@ namespace Collab_Platform.ApplicationLayer.Service
         {
             var userId = _helperService.GetTokenDetails().userId;
             var task = await _taskRepo.GetTaskByUserId(userId) ?? throw new KeyNotFoundException("This user dont have any task assigned");
-            var taskDetail = task.Select(t => new TaskDetailDto
-            {
-                TaskId = t.TaskId,
-                TaskName = t.TaskName,
-                TaskDesc = t.TaskDesc,
-                TaskDueDate = t.TaskDueDate,
-                TaskStatus = t.TaskStatus,
-                Project = new ProjectDetail
-                {
-                    ProjectId = t.Project.ProjectId,
-                    ProjectName = t.Project.ProjectName,
-                },
-                TaskLeader = new TaskLeader
-                {
-                    LeaderId = t.TaskLeaderId,
-                    LeaderName = t.TaskLeader.UserName,
-                },
-                Creator = new Creator
-                {
-                    UserId = t.CreatedById,
-                    UserName = t.CreatedBy.UserName
-                }
-            }).ToList();
+            var taskDetail = TaskMapper.ToListTaskDetailDto(task);
             return taskDetail;
         }
         public async Task AddUserToTask(Guid TaskId, List<string> UserId)
@@ -279,10 +214,6 @@ namespace Collab_Platform.ApplicationLayer.Service
             {
                 var userId = _helperService.GetTokenDetails().userId;
                 var task = await _taskRepo.GetTaskByTaskId(TaskId) ?? throw new KeyNotFoundException("Task with the given task id not found");
-                if (task.TaskLeaderId != userId || task.Project.CreatorId != userId)
-                {
-                    throw new InvalidRoleException("You must be the creator of this task or creator of the project");
-                }
                 task.TaskName = updateTask.TaskName;
                 task.TaskDesc = updateTask.TaskDesc;
                 task.TaskDueDate = updateTask.TaskDueDate;
@@ -337,29 +268,7 @@ namespace Collab_Platform.ApplicationLayer.Service
         {
             var UserID = _helperService.GetTokenDetails().userId;
             var task = await _taskRepo.GetTaskByCreator(UserID) ?? throw new KeyNotFoundException("This user dont have any task");
-            var taskDetail = task.Select(t => new TaskDetailDto
-            {
-                TaskId = t.TaskId,
-                TaskName = t.TaskName,
-                TaskDesc = t.TaskDesc,
-                TaskDueDate = t.TaskDueDate,
-                TaskStatus = t.TaskStatus,
-                Project = new ProjectDetail
-                {
-                    ProjectId = t.Project.ProjectId,
-                    ProjectName = t.Project.ProjectName,
-                },
-                TaskLeader = new TaskLeader
-                {
-                    LeaderId = t.TaskLeaderId,
-                    LeaderName = t.TaskLeader.UserName,
-                },
-                Creator = new Creator
-                {
-                    UserId = t.CreatedById,
-                    UserName = t.CreatedBy.UserName
-                }
-            }).ToList();
+            var taskDetail = TaskMapper.ToListTaskDetailDto(task);
             return taskDetail;
         }
     }
