@@ -100,7 +100,7 @@ namespace Collab_Platform.ApplicationLayer.Service
                         UserId = u
                     }).ToList();
                     await _channelRepo.RemoveUserFromChanel(userToRemoveList);
-                    var userToAdd = newEnty.Select(u => new UserChannel
+                    var userToAdd = newEnty.Distinct().Select(u => new UserChannel
                     {
                         ChannelId = channels.ChannelId,
                         UserId = u
@@ -130,5 +130,6 @@ namespace Collab_Platform.ApplicationLayer.Service
         public async Task EditUserToChannel(Guid ChannelId, List<string> UserId) {
             var channel = await _channelRepo.GetChannelByID(ChannelId) ?? throw new KeyNotFoundException("This channel does not exsit");
         }
+        
     }
 }

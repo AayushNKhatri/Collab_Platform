@@ -4,7 +4,6 @@ using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
 using Collab_Platform.ApplicationLayer.Interface.RepoInterface;
 using Collab_Platform.ApplicationLayer.Interface.ServiceInterface;
 using Collab_Platform.DomainLayer.Models;
-using static Collab_Platform.PresentationLayer.Middleware.ExecptionClass;
 
 namespace Collab_Platform.ApplicationLayer.Service
 {

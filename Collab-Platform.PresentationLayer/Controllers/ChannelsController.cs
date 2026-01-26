@@ -59,5 +59,17 @@ namespace Collab_Platform.PresentationLayer.Controllers
                 Success = true
             });
         }
+        [HttpPut("AddUserToChannel/{ChannelsId}")]
+        public async Task<IActionResult> AddUserToChannel(List<string> UserID, Guid ChannelsId) {
+            await _channelSerivce.AddUserToChannel(ChannelsId, UserID);
+            return Ok(new APIResponse { 
+                Messege = "User sucessfully added to channel's",
+                Success = true,
+            });
+        }
+        //[HttpGet("GetChannelByProject/{ProjectId}")]
+        //public async Task<IActionResult> GetProjectByChannels() { 
+        //    await _channelSerivce
+        //}
     }
 }
