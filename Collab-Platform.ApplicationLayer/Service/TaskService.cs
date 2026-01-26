@@ -54,8 +54,9 @@ namespace Collab_Platform.ApplicationLayer.Service
                     newUserTask.Add(task.TaskLeaderId);
                 }
                 else {
-                    if (projectMemberID.Select(u => u).ToString() != createTask.TaskLeaderId) {
-                        throw new InvalidOperationException("The task leader is not a porject member");
+                    if (projectMemberID.Any(memberId => memberId.Contains(createTask.TaskLeaderId))) 
+                    {
+                        throw new InvalidOperationException("Tphe task leader is not a porject member");
                     }
 
                     task.TaskLeaderId = createTask.TaskLeaderId;
@@ -128,7 +129,7 @@ namespace Collab_Platform.ApplicationLayer.Service
             await _unitOfWork.BeginTranctionAsync();
             try
             {
-                var userId = _helperService.GetTokenDetails().userId;
+                //var userId = _helperService.GetTokenDetails().userId;
                 var task = await _taskRepo.GetTaskByTaskId(TaskId) ?? throw new KeyNotFoundException("Task with the given task id not found");
                 var existingUserTasks = task.UserTasks.Select(ut => ut.UserId).ToHashSet();
                 var newUserTasks = UserId

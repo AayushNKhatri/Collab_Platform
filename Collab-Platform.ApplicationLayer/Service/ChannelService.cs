@@ -1,4 +1,3 @@
-using AutoMapper;
 using Collab_Platform.ApplicationLayer.DTO.ChannelsDto;
 using Collab_Platform.ApplicationLayer.DTO.Mapper;
 using Collab_Platform.ApplicationLayer.Interface.HelperInterface;
@@ -115,6 +114,21 @@ namespace Collab_Platform.ApplicationLayer.Service
                 throw;
             }
             
+        }
+
+        public async Task AddUserToChannel(Guid ChannelId, List<string>UserId) {
+            var channel = await _channelRepo.GetChannelByID(ChannelId) ?? throw new KeyNotFoundException("Channel not found");
+            var currentChannelUser = channel.UserChannels.Select(u => u.UserId).ToHashSet();
+            var newChannelUser = UserId.Where(u => !currentChannelUser.Contains(u)).Select(u => new UserChannel
+            {
+                UserId = u,
+                ChannelId = channel.ChannelId
+            }).ToList();
+            await _channelRepo.AddUserToChanel(newChannelUser);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        public async Task EditUserToChannel(Guid ChannelId, List<string> UserId) {
+            var channel = await _channelRepo.GetChannelByID(ChannelId) ?? throw new KeyNotFoundException("This channel does not exsit");
         }
     }
 }

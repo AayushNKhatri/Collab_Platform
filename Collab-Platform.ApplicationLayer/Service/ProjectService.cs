@@ -63,6 +63,9 @@ namespace Collab_Platform.ApplicationLayer.Service
                 userProject.Add(userID);
                 if (createProjectDto.ProjectMemberID != null)
                 {
+                    if (createProjectDto.ProjectMemberID.Contains(project.CreatorId)) {
+                        throw new InvalidOperationException("Project leader cannot be added as user");
+                    }
                     var projectMember = createProjectDto.ProjectMemberID.Distinct().Select(u => u).ToList();
                     userProject.AddRange(projectMember);
                 }
