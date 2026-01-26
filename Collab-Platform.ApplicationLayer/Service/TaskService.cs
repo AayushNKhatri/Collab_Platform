@@ -48,13 +48,13 @@ namespace Collab_Platform.ApplicationLayer.Service
                 List<string> newUserTask = new List<string>();
                 var projectMember = await _projectInterface.GetUserProjectDetails(project) ?? throw new KeyNotFoundException("There is no member in project select member first");
                 var projectMemberID = projectMember.Select(m => m.UserId).ToList();
-                if (createTask.TaskLeaderId == null)
+                if (createTask.TaskLeaderId == null)                      //Check if creator added a task leader if not creator is task leader
                 {
                     task.TaskLeaderId = TaskCreatorId;
                     newUserTask.Add(task.TaskLeaderId);
                 }
                 else {
-                    if (!projectMemberID.Any(memberId => memberId.Contains(createTask.TaskLeaderId))) 
+                    if (!projectMemberID.Any(memberId => memberId.Contains(createTask.TaskLeaderId)))               //This is validation for if task leader is project member or not
                     {
                         throw new InvalidOperationException("The task leader is not a porject member");
                     }
@@ -77,9 +77,8 @@ namespace Collab_Platform.ApplicationLayer.Service
                         throw new ArgumentException("Some users are not part of the project");
                     }
                     newUserTask.Add(TaskCreatorId);
-                    var uniqueUser = newUserTask.Distinct().ToList();
                 }
-                var userTask = newUserTask.Select(u => new UserTask
+                var userTask = newUserTask.Distinct().Select(u => new UserTask
                 {
                     TaskId = task.TaskId,
                     UserId = u
