@@ -54,9 +54,9 @@ namespace Collab_Platform.ApplicationLayer.Service
                     newUserTask.Add(task.TaskLeaderId);
                 }
                 else {
-                    if (projectMemberID.Any(memberId => memberId.Contains(createTask.TaskLeaderId))) 
+                    if (!projectMemberID.Any(memberId => memberId.Contains(createTask.TaskLeaderId))) 
                     {
-                        throw new InvalidOperationException("Tphe task leader is not a porject member");
+                        throw new InvalidOperationException("The task leader is not a porject member");
                     }
 
                     task.TaskLeaderId = createTask.TaskLeaderId;
